@@ -1,5 +1,5 @@
 <img src="https://s3-eu-central-1.amazonaws.com/centaur-wp/designweek/prod/content/uploads/2016/05/11170038/Instagram_Logo-1002x1003.jpg" width="200" align="right">
-# instagram-profilecrawl
+# Instagram-Profilecrawl
 
 ## Quickly crawl the information (e.g. followers, tags etc...) of an instagram profile. No login required!
 Automation Script for crawling information from ones instagram profile.  
