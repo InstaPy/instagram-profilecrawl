@@ -8,18 +8,23 @@ from selenium import webdriver
 from util.cli_helper import get_all_user_names
 from util.extractor import extract_information
 
-usernames = get_all_user_names()
 browser = webdriver.Chrome('./assets/chromedriver')
-
 #will be patient with slower page load times
-browser.implicitly_wait(10)
+browser.implicitly_wait(25)
 
-for username in usernames:
-  print('Extracting information from ' + username)
-  information = extract_information(browser, username)
+try:
+  usernames = get_all_user_names()
 
-  with open('./profiles/' + username + '.json', 'w') as fp:
-    json.dump(information, fp)
+  for username in usernames:
+    print('Extracting information from ' + username)
+    information = extract_information(browser, username)
 
-browser.delete_all_cookies()
-browser.close()
+    with open('./profiles/' + username + '.json', 'w') as fp:
+      json.dump(information, fp)
+
+except KeyboardInterrupt:
+  print('Aborted...')
+
+finally:
+  browser.delete_all_cookies()
+  browser.close()
