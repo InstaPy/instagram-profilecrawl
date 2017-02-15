@@ -11,7 +11,7 @@ It uses selenium to get all the information
 pip install selenium
 ```
 
-### Use it!
+## Use it!
 ```bash
 python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
