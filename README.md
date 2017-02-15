@@ -5,13 +5,19 @@
 Automation Script for crawling information from ones instagram profile.  
 Like e.g. the number of posts, followers, and the tags of the the posts
 
-##### Getting started
-It uses selenium to get all the information
+#### Getting started
+Just do:
+```bash
+git clone https://github.com/timgrossmann/instagram-profilecrawl.git
+```
+
+It uses selenium to get all the information so install it with:
 ```bash
 pip install selenium
 ```
 
 ## Use it!
+Now you can start it using:
 ```bash
 python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
