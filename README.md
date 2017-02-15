@@ -16,4 +16,7 @@ pip install selenium
 python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
 
+#### The information will be saved in a JSON-File in ./profile.
+> Example of a files data
+
 
