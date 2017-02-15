@@ -12,6 +12,4 @@ def get_all_user_names():
   for username in sys.argv[1:]:
     usernames.append(username)
 
-  print(usernames)
-
   return usernames

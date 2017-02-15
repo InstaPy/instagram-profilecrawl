@@ -17,10 +17,10 @@ def get_user_info(browser):
                         .find_element_by_tag_name('h2').text
   prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
   num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
-  followers = infos[1].text.split(' ')[0].replace(',', '')
-  followers = int(followers.replace('k', '000'))
-  following = infos[2].text.split(' ')[0].replace(',', '')
-  following = int(following.replace('k', '000'))
+  followers = infos[1].text.split(' ')[0].replace(',', '').replace('.', '')
+  followers = int(followers.replace('k', '00').replace('m', '00000'))
+  following = infos[2].text.split(' ')[0].replace(',', '').replace('.', '')
+  following = int(following.replace('k', '00'))
 
   return alias_name, prof_img, num_of_posts, followers, following
 
@@ -43,7 +43,8 @@ def extract_post_info(browser):
     likes = len([word for word in likes if word not in ['and', 'like', 'this']])
   else:
     likes = likes[0]
-    likes = likes.replace(',', '')
+    likes = likes.replace(',', '').replace('.', '')
+    likes = likes.replace('k', '00')
 
   # if more than 22 comment elements, use the second to see
   # how much comments, else count the li's
@@ -79,28 +80,29 @@ def extract_information(browser, username):
 
   prev_divs = browser.find_elements_by_class_name('_myci9')
 
-  try:
-    body_elem = browser.find_element_by_tag_name('body')
+  if num_of_posts > 12:
+    try:
+      body_elem = browser.find_element_by_tag_name('body')
 
-    load_button = body_elem.find_element_by_xpath\
-      ('//a[contains(@class, "_8imhp _glz1g")]')
-    body_elem.send_keys(Keys.END)
-    sleep(1)
-
-    load_button.click()
-
-    body_elem.send_keys(Keys.HOME)
-    sleep(1)
-
-    while len(browser.find_elements_by_class_name('_myci9')) > len(prev_divs):
-      prev_divs = browser.find_elements_by_class_name('_myci9')
+      load_button = body_elem.find_element_by_xpath\
+        ('//a[contains(@class, "_8imhp _glz1g")]')
       body_elem.send_keys(Keys.END)
       sleep(1)
+
+      load_button.click()
+
       body_elem.send_keys(Keys.HOME)
       sleep(1)
 
-  except NoSuchElementException as err:
-    print('- Only few posts\n')
+      while len(browser.find_elements_by_class_name('_myci9')) > len(prev_divs):
+        prev_divs = browser.find_elements_by_class_name('_myci9')
+        body_elem.send_keys(Keys.END)
+        sleep(1)
+        body_elem.send_keys(Keys.HOME)
+        sleep(1)
+
+    except NoSuchElementException as err:
+      print('- Only few posts\n')
 
   links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
   links = sum([[link_elem.get_attribute('href')

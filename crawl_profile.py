@@ -2,10 +2,11 @@
 
 """Goes through all usernames and collects their information"""
 import json
+
 from selenium import webdriver
 
-from extractor import extract_information
-from util import get_all_user_names
+from util.cli_helper import get_all_user_names
+from util.extractor import extract_information
 
 usernames = get_all_user_names()
 browser = webdriver.Chrome('./assets/chromedriver')
