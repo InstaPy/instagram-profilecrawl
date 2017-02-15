@@ -45,3 +45,9 @@ python3.5 crawl_profile.py username1 username2 ... usernameX
   "following": 310
 }
 ```
+
+#### With the help of [Wordcloud](https://github.com/amueller/word_cloud) you could do something like that with your used tags
+![](http://i65.tinypic.com/2nkrrtg.png)
+
+<hr />
+###### Have Fun & Feel Free to report any issues
