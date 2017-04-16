@@ -4,12 +4,19 @@
 import json
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 from util.cli_helper import get_all_user_names
 from util.extractor import extract_information
 
-browser = webdriver.Chrome('./assets/chromedriver')
-#will be patient with slower page load times
+chrome_options = Options()
+chrome_options.add_argument('--dns-prefetch-disable')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--lang=en-US')
+chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
+browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+
+# makes sure slower connections work as well
 browser.implicitly_wait(25)
 
 try:
