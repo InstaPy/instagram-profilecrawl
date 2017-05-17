@@ -30,8 +30,13 @@ def extract_post_info(browser):
 
   post = browser.find_element_by_class_name('_tjnr4')
 
+  print('BEFORE IMG')
+
   imgs = post.find_elements_by_tag_name('img')
-  img = imgs[1].get_attribute('src')
+  img = ''
+
+  if len(imgs) >= 2:
+    img = imgs[1].get_attribute('src')
 
   likes = post.find_element_by_tag_name('section')\
           .find_element_by_tag_name('div').text
