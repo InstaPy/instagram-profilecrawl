@@ -38,39 +38,45 @@ def extract_post_info(browser):
   if len(imgs) >= 2:
     img = imgs[1].get_attribute('src')
 
-  likes = post.find_element_by_tag_name('section')\
-          .find_element_by_tag_name('div').text
+  likes = 0
+  if len(post.find_elements_by_tag_name('section')) > 2:
+    likes = post.find_elements_by_tag_name('section')[1]\
+            .find_element_by_tag_name('div').text
 
-  likes = likes.split(' ')
+    likes = likes.split(' ')
 
-  #count the names if there is no number displayed
-  if len(likes) > 2:
-    likes = len([word for word in likes if word not in ['and', 'like', 'this']])
-  else:
-    likes = likes[0]
-    likes = likes.replace(',', '').replace('.', '')
-    likes = likes.replace('k', '00')
+    #count the names if there is no number displayed
+    if len(likes) > 2:
+      likes = len([word for word in likes if word not in ['and', 'like', 'this']])
+    else:
+      likes = likes[0]
+      likes = likes.replace(',', '').replace('.', '')
+      likes = likes.replace('k', '00')
 
   # if more than 22 comment elements, use the second to see
   # how much comments, else count the li's
 
   # first element is the text, second either the first comment
   # or the button to display all the comments
-  comment_list = post.find_element_by_tag_name('ul')
-  comments = comment_list.find_elements_by_tag_name('li')
+  comments = 0
+  tags = []
+  if post.find_elements_by_tag_name('ul'):
+    comment_list = post.find_element_by_tag_name('ul')
+    comments = comment_list.find_elements_by_tag_name('li')
 
-  if len(comments) > 1:
-    tags = comments[0].text + ' ' + comments[1].text
-  else:
-    tags = comments[0].text
+    if len(comments) > 1:
+      tags = comments[0].text + ' ' + comments[1].text
+    else:
+      tags = comments[0].text
 
-  tags = findall(r'#[A-Za-z0-9]*', tags)
+    tags = findall(r'#[A-Za-z0-9]*', tags)
 
-  if len(comments) < 22:
-    comments = len(comments) - 1
-  else:
-    comments = comments[1].find_element_by_tag_name('span').text
-    comments = comments.replace(',', '')
+    if len(comments) < 22:
+      comments = len(comments) - 1
+    else:
+      comments = comments[1].find_element_by_tag_name('span').text
+      comments = comments.replace(',', '')
+
 
   return img, tags, int(likes), int(comments)
 
