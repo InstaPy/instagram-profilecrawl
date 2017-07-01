@@ -38,8 +38,8 @@ def extract_post_info(browser):
   if len(imgs) >= 2:
     img = imgs[1].get_attribute('src')
 
-  likes = post.find_element_by_tag_name('section')\
-          .find_element_by_tag_name('div').text
+  likes = post.find_elements_by_tag_name('section')[1]\
+            .find_element_by_tag_name('div').text
 
   likes = likes.split(' ')
 
