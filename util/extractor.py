@@ -64,6 +64,12 @@ def extract_post_info(browser):
     comment_list = post.find_element_by_tag_name('ul')
     comments = comment_list.find_elements_by_tag_name('li')
 
+    # load hidden comments
+    while (comments[1].text == 'load more comments'):
+      comments[1].find_element_by_tag_name('button').click()
+      comment_list = post.find_element_by_tag_name('ul')
+      comments = comment_list.find_elements_by_tag_name('li')
+
     if len(comments) > 1:
       tags = comments[0].text + ' ' + comments[1].text
     else:
@@ -71,14 +77,8 @@ def extract_post_info(browser):
 
     tags = findall(r'#[A-Za-z0-9]*', tags)
 
-    if len(comments) < 22:
-      comments = len(comments) - 1
-    else:
-      comments = comments[1].find_element_by_tag_name('span').text
-      comments = comments.replace(',', '')
 
-
-  return img, tags, int(likes), int(comments)
+  return img, tags, int(likes), int(len(comments) - 1)
 
 
 def extract_information(browser, username):
