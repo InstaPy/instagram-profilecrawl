@@ -58,7 +58,7 @@ def extract_post_info(browser):
 
   # first element is the text, second either the first comment
   # or the button to display all the comments
-  comments = 0
+  comments = []
   tags = []
   if post.find_elements_by_tag_name('ul'):
     comment_list = post.find_element_by_tag_name('ul')
