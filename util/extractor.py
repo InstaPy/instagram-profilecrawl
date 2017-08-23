@@ -8,13 +8,13 @@ from selenium.webdriver.common.keys import Keys
 def get_user_info(browser):
   """Get the basic user info from the profile screen"""
 
-  container = browser.find_element_by_class_name('_de9bg')
-  img_container = browser.find_element_by_class_name('_o0ohn')
+  container = browser.find_element_by_class_name('_mesn5')
+  img_container = browser.find_element_by_class_name('_b0acm')
 
-  infos = container.find_elements_by_class_name('_218yx')
+  infos = container.find_elements_by_class_name('_t98z6')
 
-  alias_name = container.find_element_by_class_name('_bugdy')\
-                        .find_element_by_tag_name('h2').text
+  alias_name = container.find_element_by_class_name('_ienqf')\
+                        .find_element_by_tag_name('h1').text
   prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
   num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
   followers = infos[1].text.split(' ')[0].replace(',', '').replace('.', '')
@@ -28,7 +28,7 @@ def get_user_info(browser):
 def extract_post_info(browser):
   """Get the information from the current post"""
 
-  post = browser.find_element_by_class_name('_tjnr4')
+  post = browser.find_element_by_class_name('_622au')
 
   print('BEFORE IMG')
 
@@ -88,14 +88,14 @@ def extract_information(browser, username):
   alias_name, prof_img, num_of_posts, followers, following \
     = get_user_info(browser)
 
-  prev_divs = browser.find_elements_by_class_name('_myci9')
+  prev_divs = browser.find_elements_by_class_name('_70iju')
 
   if num_of_posts > 12:
     try:
       body_elem = browser.find_element_by_tag_name('body')
 
       load_button = body_elem.find_element_by_xpath\
-        ('//a[contains(@class, "_8imhp _glz1g")]')
+        ('//a[contains(@class, "_1cr2e _epyes")]')
       body_elem.send_keys(Keys.END)
       sleep(1)
 
@@ -104,8 +104,8 @@ def extract_information(browser, username):
       body_elem.send_keys(Keys.HOME)
       sleep(1)
 
-      while len(browser.find_elements_by_class_name('_myci9')) > len(prev_divs):
-        prev_divs = browser.find_elements_by_class_name('_myci9')
+      while len(browser.find_elements_by_class_name('_70iju')) > len(prev_divs):
+        prev_divs = browser.find_elements_by_class_name('_70iju')
         body_elem.send_keys(Keys.END)
         sleep(1)
         body_elem.send_keys(Keys.HOME)
