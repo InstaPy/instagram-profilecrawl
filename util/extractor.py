@@ -97,7 +97,7 @@ def extract_information(browser, username):
       load_button = body_elem.find_element_by_xpath\
         ('//a[contains(@class, "_1cr2e _epyes")]')
       body_elem.send_keys(Keys.END)
-      sleep(1)
+      sleep(3)
 
       load_button.click()
 
