@@ -1,148 +1,85 @@
-"""Methods to extract the data for the given usernames profile"""
-from time import sleep
-from re import findall
+import json
 
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
+def get_general_user_info(browser, username):
+  browser.get('https://www.instagram.com/{username}/?__a=1'.format(username=username))
+  user = json.loads(browser.find_element_by_tag_name("pre").text)['user']
 
-def get_user_info(browser):
-  """Get the basic user info from the profile screen"""
+  return user['id'], user['biography'], \
+         user['full_name'], user['profile_pic_url'], \
+         user['followed_by']['count'], user['follows']['count'], \
+         user['media']['count']
 
-  container = browser.find_element_by_class_name('_de9bg')
-  img_container = browser.find_element_by_class_name('_o0ohn')
+def get_user_followers(browser, user_id, follower_count):
+  browser.get(
+    'https://www.instagram.com/graphql/query/?query_id=17851374694183129&variables=%7B"id":"{id}","first":{count}%7D'.format(
+      id=user_id, count=follower_count))
+  user_followers = json.loads(browser.find_element_by_tag_name("pre").text)['data']['user']['edge_followed_by']['edges']
 
-  infos = container.find_elements_by_class_name('_218yx')
+  return [{
+    'username': profile['username'],
+    'full_name': profile['full_name'],
+    'profile_pic': profile['profile_pic_url']
+  } for profile in user_followers]
 
-  alias_name = container.find_element_by_class_name('_bugdy')\
-                        .find_element_by_tag_name('h2').text
-  prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
-  num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
-  followers = infos[1].text.split(' ')[0].replace(',', '').replace('.', '')
-  followers = int(followers.replace('k', '00').replace('m', '00000'))
-  following = infos[2].text.split(' ')[0].replace(',', '').replace('.', '')
-  following = int(following.replace('k', '00'))
+def get_user_followings(browser, user_id, following_count):
+  browser.get(
+    'https://www.instagram.com/graphql/query/?query_id=17874545323001329&variables=%7B"id":{id},"first":{count}%7D'.format(
+      id=user_id, count=following_count))
+  user_followings = json.loads(browser.find_element_by_tag_name("pre").text)['data']['user']['edge_follow']['edges']
 
-  return alias_name, prof_img, num_of_posts, followers, following
+  return [{
+    'username': profile['username'],
+    'full_name': profile['full_name'],
+    'profile_pic': profile['profile_pic_url']
+  } for profile in user_followings]
 
+def get_user_posts(browser, user_id, post_count):
+  browser.get(
+    'https://www.instagram.com/graphql/query/?query_id=17888483320059182&variables=%7B"id":{id},"first":{count}%7D'.format(
+      id=user_id, count=post_count))
 
-def extract_post_info(browser):
-  """Get the information from the current post"""
+  print(json.loads(browser.find_element_by_tag_name("pre").text))
 
-  post = browser.find_element_by_class_name('_tjnr4')
+  user_posts = json.loads(browser.find_element_by_tag_name("pre").text)['data']['user']['edge_owner_to_timeline_media']['edges']
 
-  print('BEFORE IMG')
-
-  imgs = post.find_elements_by_tag_name('img')
-  img = ''
-
-  if len(imgs) >= 2:
-    img = imgs[1].get_attribute('src')
-
-  likes = 0
-  if len(post.find_elements_by_tag_name('section')) > 2:
-    likes = post.find_elements_by_tag_name('section')[1]\
-            .find_element_by_tag_name('div').text
-
-    likes = likes.split(' ')
-
-    #count the names if there is no number displayed
-    if len(likes) > 2:
-      likes = len([word for word in likes if word not in ['and', 'like', 'this']])
-    else:
-      likes = likes[0]
-      likes = likes.replace(',', '').replace('.', '')
-      likes = likes.replace('k', '00')
-
-  # if more than 22 comment elements, use the second to see
-  # how much comments, else count the li's
-
-  # first element is the text, second either the first comment
-  # or the button to display all the comments
-  comments = []
-  tags = []
-  if post.find_elements_by_tag_name('ul'):
-    comment_list = post.find_element_by_tag_name('ul')
-    comments = comment_list.find_elements_by_tag_name('li')
-
-    if len(comments) > 1:
-      # load hidden comments
-      while (comments[1].text == 'load more comments'):
-        comments[1].find_element_by_tag_name('button').click()
-        comment_list = post.find_element_by_tag_name('ul')
-        comments = comment_list.find_elements_by_tag_name('li')
-      tags = comments[0].text + ' ' + comments[1].text
-    else:
-      tags = comments[0].text
-
-    tags = findall(r'#[A-Za-z0-9]*', tags)
-
-
-  return img, tags, int(likes), int(len(comments) - 1)
-
+  return [{
+    'caption': post['edge_media_to_caption']['edges'][0]['node']['text'],
+    'media_url': post['display_url'],
+    'num_of_comments': post['edge_media_to_comment']['count'],
+    'num_of_likes': post['edge_media_preview_like']['count'],
+    'is_video': post['is_video']
+  } for post in user_posts if post] if len(user_posts) > 0 else []
 
 def extract_information(browser, username):
-  """Get all the information for the given username"""
+  user_id, \
+  biography, \
+  full_name, \
+  profile_pic, \
+  follower_count, \
+  following_count, \
+  post_count = get_general_user_info(browser, username)
 
-  browser.get('https://www.instagram.com/' + username)
+  followers = get_user_followers(browser, user_id, follower_count)
+  followings = get_user_followings(browser, user_id, following_count)
+  #TODO get the data of all the posts
+  posts = []#get_user_posts(browser, user_id, post_count)
 
-  alias_name, prof_img, num_of_posts, followers, following \
-    = get_user_info(browser)
-
-  prev_divs = browser.find_elements_by_class_name('_myci9')
-
-  if num_of_posts > 12:
-    try:
-      body_elem = browser.find_element_by_tag_name('body')
-
-      load_button = body_elem.find_element_by_xpath\
-        ('//a[contains(@class, "_8imhp _glz1g")]')
-      body_elem.send_keys(Keys.END)
-      sleep(1)
-
-      load_button.click()
-
-      body_elem.send_keys(Keys.HOME)
-      sleep(1)
-
-      while len(browser.find_elements_by_class_name('_myci9')) > len(prev_divs):
-        prev_divs = browser.find_elements_by_class_name('_myci9')
-        body_elem.send_keys(Keys.END)
-        sleep(1)
-        body_elem.send_keys(Keys.HOME)
-        sleep(1)
-
-    except NoSuchElementException as err:
-      print('- Only few posts\n')
-
-  links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
-  links = sum([[link_elem.get_attribute('href')
-                for link_elem in elems] for elems in links_elems], [])
-
-  post_infos = []
-
-  for link in links:
-    browser.get(link)
-
-    try:
-      img, tags, likes, comments = extract_post_info(browser)
-
-      post_infos.append({
-        'img': img,
-        'tags': tags,
-        'likes': likes,
-        'comments': comments
-      })
-    except NoSuchElementException:
-      print('- Could not get information from post: ' + link)
-
-  information = {
-    'alias': alias_name,
-    'username': username,
-    'prof_img': prof_img,
-    'num_of_posts': num_of_posts,
-    'followers': followers,
-    'following': following,
-    'posts': post_infos
+  return {
+    'user': {
+      'full_name': full_name,
+      'biography': biography,
+      'profile_pic': profile_pic
+    },
+    'followers': {
+      'amount': follower_count,
+      'profiles': followers
+    },
+    'following': {
+      'amount': following_count,
+      'profiles': followings
+    },
+    'media': {
+      'amount': post_count,
+      'posts': posts
+    }
   }
-
-  return information
