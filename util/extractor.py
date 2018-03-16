@@ -30,7 +30,7 @@ def extract_post_info(browser):
 
   post = browser.find_element_by_class_name('_622au')
 
-  print('BEFORE IMG')
+  #print('BEFORE IMG')
 
   imgs = post.find_elements_by_tag_name('img')
   img = ''
@@ -85,44 +85,58 @@ def extract_information(browser, username):
 
   browser.get('https://www.instagram.com/' + username)
 
-  alias_name, prof_img, num_of_posts, followers, following \
+  try:
+    alias_name, prof_img, num_of_posts, followers, following \
     = get_user_info(browser)
-
+  except:
+    print ("\nError: Couldn't get user profile.\nTerminating")
+    quit()
   prev_divs = browser.find_elements_by_class_name('_70iju')
 
-  if num_of_posts > 12:
-    try:
-      body_elem = browser.find_element_by_tag_name('body')
 
-      load_button = body_elem.find_element_by_xpath\
-        ('//a[contains(@class, "_1cr2e _epyes")]')
+  try:
+    body_elem = browser.find_element_by_tag_name('body')
+
+    #load_button = body_elem.find_element_by_xpath\
+    #  ('//a[contains(@class, "_1cr2e _epyes")]')
+    #body_elem.send_keys(Keys.END)
+    #sleep(3)
+
+    #load_button.click()
+
+    links = []
+    links2 = []
+
+    
+    #list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
+    #list links2 contains all the links collected so far
+    
+    while (len(links2) < num_of_posts):
+      
+      prev_divs = browser.find_elements_by_tag_name('main')      
+      links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]  
+      links = sum([[link_elem.get_attribute('href')
+        for link_elem in elems] for elems in links_elems], [])
+      for link in links:
+        if "accounts/login" not in link:
+          links2.append(link) 
+      links2 = list(set(links2))   
+      print ("Scrolling profile ", len(links2), "/", num_of_posts)
       body_elem.send_keys(Keys.END)
-      sleep(3)
+      sleep(2)
+   
 
-      load_button.click()
-
-      body_elem.send_keys(Keys.HOME)
-      sleep(1)
-
-      while len(browser.find_elements_by_class_name('_70iju')) > len(prev_divs):
-        prev_divs = browser.find_elements_by_class_name('_70iju')
-        body_elem.send_keys(Keys.END)
-        sleep(1)
-        body_elem.send_keys(Keys.HOME)
-        sleep(1)
-
-    except NoSuchElementException as err:
-      print('- Only few posts\n')
-
-  links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
-  links = sum([[link_elem.get_attribute('href')
-                for link_elem in elems] for elems in links_elems], [])
+  except NoSuchElementException as err:
+    print('- Something went terribly wrong\n')
 
   post_infos = []
 
-  for link in links:
+  counter = 1  
+  for link in links2:
     browser.get(link)
-
+    print ("\n", counter , "/", len(links2))
+    counter = counter + 1
+    print ("\nScrapping link: ", link)
     try:
       img, tags, likes, comments = extract_post_info(browser)
 
@@ -145,4 +159,5 @@ def extract_information(browser, username):
     'posts': post_infos
   }
 
+  print ("\nFinished. The json file was saved in profiles directory.\n")
   return information
