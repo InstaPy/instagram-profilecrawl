@@ -13,9 +13,7 @@ def get_user_info(browser):
 
   infos = container.find_elements_by_class_name('_t98z6')
   print ("infos: ", infos)
-  #bio = driver.findElement(By.xpath("//span[@class='_tb97a']"));
-  #print ("Bio is: ", bio)
-                        
+                          
   alias_name = container.find_element_by_class_name('_ienqf')\
                         .find_element_by_tag_name('h1').text
   try:
@@ -71,6 +69,11 @@ def extract_post_info(browser):
   # or the button to display all the comments
   comments = []
   tags = []
+  
+  date = post.find_element_by_tag_name('time').get_attribute("datetime")
+  print ("date is ", date)  
+  
+  
   if post.find_elements_by_tag_name('ul'):
     comment_list = post.find_element_by_tag_name('ul')
     comments = comment_list.find_elements_by_tag_name('li')
@@ -88,7 +91,7 @@ def extract_post_info(browser):
     tags = findall(r'#[A-Za-z0-9]*', tags)
 
 
-  return img, tags, int(likes), int(len(comments) - 1)
+  return img, tags, int(likes), int(len(comments) - 1), date
 
 
 def extract_information(browser, username):
@@ -149,10 +152,11 @@ def extract_information(browser, username):
     counter = counter + 1
     print ("\nScrapping link: ", link)
     try:
-      img, tags, likes, comments = extract_post_info(browser)
+      img, tags, likes, comments, date = extract_post_info(browser)
 
       post_infos.append({
         'img': img,
+        'date': date,
         'tags': tags,
         'likes': likes,
         'comments': comments
