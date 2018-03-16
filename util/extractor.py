@@ -12,9 +12,20 @@ def get_user_info(browser):
   img_container = browser.find_element_by_class_name('_b0acm')
 
   infos = container.find_elements_by_class_name('_t98z6')
-
+  print ("infos: ", infos)
+  #bio = driver.findElement(By.xpath("//span[@class='_tb97a']"));
+  #print ("Bio is: ", bio)
+                        
   alias_name = container.find_element_by_class_name('_ienqf')\
                         .find_element_by_tag_name('h1').text
+  try:
+    bio = container.find_element_by_class_name('_tb97a')\
+                        .find_element_by_tag_name('span').text                      
+  except:
+    print ("\nBio is empty")
+    bio = ""
+  print ("\nalias name: ", alias_name)
+  print ("\nbio: ", bio,"\n")
   prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
   num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
   followers = infos[1].text.split(' ')[0].replace(',', '').replace('.', '')
@@ -22,7 +33,7 @@ def get_user_info(browser):
   following = infos[2].text.split(' ')[0].replace(',', '').replace('.', '')
   following = int(following.replace('k', '00'))
 
-  return alias_name, prof_img, num_of_posts, followers, following
+  return alias_name, bio, prof_img, num_of_posts, followers, following
 
 
 def extract_post_info(browser):
@@ -86,7 +97,7 @@ def extract_information(browser, username):
   browser.get('https://www.instagram.com/' + username)
 
   try:
-    alias_name, prof_img, num_of_posts, followers, following \
+    alias_name, bio, prof_img, num_of_posts, followers, following \
     = get_user_info(browser)
   except:
     print ("\nError: Couldn't get user profile.\nTerminating")
@@ -152,6 +163,7 @@ def extract_information(browser, username):
   information = {
     'alias': alias_name,
     'username': username,
+    'bio': bio,
     'prof_img': prof_img,
     'num_of_posts': num_of_posts,
     'followers': followers,
