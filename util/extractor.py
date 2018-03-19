@@ -43,15 +43,18 @@ def extract_post_info(browser):
 
   imgs = post.find_elements_by_tag_name('img')
   img = ''
-
+  
+  
   if len(imgs) >= 2:
     img = imgs[1].get_attribute('src')
+    
 
   likes = 0
+  
   if len(post.find_elements_by_tag_name('section')) > 2:
     likes = post.find_elements_by_tag_name('section')[1]\
             .find_element_by_tag_name('div').text
-
+    
     likes = likes.split(' ')
 
     #count the names if there is no number displayed
@@ -71,27 +74,31 @@ def extract_post_info(browser):
   tags = []
   
   date = post.find_element_by_tag_name('time').get_attribute("datetime")
-  print ("date is ", date)  
+  #print ("date is ", date)  
   
-  
+  user_commented_list = []
   if post.find_elements_by_tag_name('ul'):
     comment_list = post.find_element_by_tag_name('ul')
     comments = comment_list.find_elements_by_tag_name('li')
-
+    
     if len(comments) > 1:
       # load hidden comments
       while (comments[1].text == 'load more comments'):
         comments[1].find_element_by_tag_name('button').click()
         comment_list = post.find_element_by_tag_name('ul')
         comments = comment_list.find_elements_by_tag_name('li')
+      #adding who commented into user_commented_list
+      for comm in comments:
+        user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
+        user_commented_list.append(user_commented[3])
+        
       tags = comments[0].text + ' ' + comments[1].text
     else:
       tags = comments[0].text
 
     tags = findall(r'#[A-Za-z0-9]*', tags)
-
-
-  return img, tags, int(likes), int(len(comments) - 1), date
+    print (len(user_commented_list), " comments.")
+  return img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
 
 
 def extract_information(browser, username):
@@ -132,12 +139,12 @@ def extract_information(browser, username):
       links = sum([[link_elem.get_attribute('href')
         for link_elem in elems] for elems in links_elems], [])
       for link in links:
-        if "accounts/login" not in link:
+        if "/p/" in link:
           links2.append(link) 
       links2 = list(set(links2))   
       print ("Scrolling profile ", len(links2), "/", num_of_posts)
       body_elem.send_keys(Keys.END)
-      sleep(2)
+      sleep(1.5)
    
 
   except NoSuchElementException as err:
@@ -146,13 +153,16 @@ def extract_information(browser, username):
   post_infos = []
 
   counter = 1  
+  #into user_commented_total_list I will add all username links who commented on any post of this user
+  user_commented_total_list = []
   for link in links2:
-    browser.get(link)
+    
     print ("\n", counter , "/", len(links2))
     counter = counter + 1
     print ("\nScrapping link: ", link)
+    browser.get(link)
     try:
-      img, tags, likes, comments, date = extract_post_info(browser)
+      img, tags, likes, comments, date, user_commented_list = extract_post_info(browser)
 
       post_infos.append({
         'img': img,
@@ -161,8 +171,11 @@ def extract_information(browser, username):
         'likes': likes,
         'comments': comments
       })
+      user_commented_total_list = user_commented_total_list + user_commented_list
     except NoSuchElementException:
       print('- Could not get information from post: ' + link)
+
+
 
   information = {
     'alias': alias_name,
@@ -172,8 +185,26 @@ def extract_information(browser, username):
     'num_of_posts': num_of_posts,
     'followers': followers,
     'following': following,
-    'posts': post_infos
+    'posts': post_infos     
   }
 
-  print ("\nFinished. The json file was saved in profiles directory.\n")
-  return information
+  print ("\nUser ", username, " has ",len(user_commented_total_list)," comments.")
+  
+  #sorts the list by frequencies, so users who comment the most are at the top
+  import collections
+  from operator import itemgetter, attrgetter
+  counter=collections.Counter(user_commented_total_list)
+  com = sorted(counter.most_common(), key=itemgetter(1,0), reverse=True)
+  com = map(lambda x: [x[0]] * x[1], com)
+  user_commented_total_list = [item for sublist in com for item in sublist]
+   
+  #remove duplicates preserving order (that's why not using set())
+  user_commented_list = []
+  last = ''
+  for i in range(len(user_commented_total_list)):
+    if username.lower() != user_commented_total_list[i]:
+      if last != user_commented_total_list[i]:
+        user_commented_list.append(user_commented_total_list[i])
+      last = user_commented_total_list[i]     
+
+  return information, user_commented_list

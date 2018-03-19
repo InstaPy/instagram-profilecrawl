@@ -26,10 +26,18 @@ try:
 
   for username in usernames:
     print('Extracting information from ' + username)
-    information = extract_information(browser, username)
+    information, user_commented_list = extract_information(browser, username)
 
     with open('./profiles/' + username + '.json', 'w') as fp:
       json.dump(information, fp)
+                                                     
+    print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")
+    file = open("./profiles/" + username + "_commenters.txt","w") 
+    for line in user_commented_list:
+      file.write(line)
+      file.write("\n")
+    file.close()     
+    print ("\nFinished. The json file and nicknames of users who commented were saved in profiles directory.\n")
 
 except KeyboardInterrupt:
   print('Aborted...')
