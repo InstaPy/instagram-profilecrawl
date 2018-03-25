@@ -25,6 +25,14 @@ Now you can start it using:
 python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
 
+### Run on Raspberry Pi
+To run the crawler on Raspberry Pi with Firefox, follow these steps:
+
+1. Install Firefox: `sudo apt-get install firefox-esr`
+2. Get the `geckodriver` as [described here](https://github.com/timgrossmann/InstaPy/blob/master/docs/How_to_Raspberry.md#how-to-update-geckodriver-on-raspbian)
+3. Install `pyvirtualdisplay`: `sudo pip3 install pyvirtualdisplay`
+4. Run the script for RPi: `python3 crawl_profile_pi.py username1 username2 ...`
+
 #### The information will be saved in a JSON-File in ./profiles/{username}.json.
 > Example of a files data
 ```
