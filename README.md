@@ -33,6 +33,19 @@ To run the crawler on Raspberry Pi with Firefox, follow these steps:
 3. Install `pyvirtualdisplay`: `sudo pip3 install pyvirtualdisplay`
 4. Run the script for RPi: `python3 crawl_profile_pi.py username1 username2 ...`
 
+**Collecting stats:**
+
+If you are interested in collecting and logging stats from a crawled profile, use the `log_stats.py` script *after* runnig `crawl_profile.py` (or `crawl_profile_pi.py`).
+For example, on Raspberry Pi run:
+
+1. Run `python3 crawl_profile_pi.py username`
+2. Run `python3 log_stats.py -u username`
+
+This appends the collected profile info to `stats.csv`. Can be useful for monitoring the growth of an Instagram account over time.
+The logged stats are: Time, username, total number of followers, following, posts, likes, and comments.
+The two commands can simply be triggered using `crontab` (make sure to trigger `log_stats.py` several minutes after `crawl_profile_pi.py`).
+
+
 #### The information will be saved in a JSON-File in ./profiles/{username}.json.
 > Example of a files data
 ```
