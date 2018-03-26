@@ -41,7 +41,8 @@ For example, on Raspberry Pi run:
 1. Run `python3 crawl_profile_pi.py username`
 2. Run `python3 log_stats.py -u username`
 
-This appends the collected profile info to `stats.csv`. Can be useful for monitoring the development of an Instagram account over time.
+This appends the collected profile info to `stats.csv`. Can be useful for monitoring the growth of an Instagram account over time.
+The logged stats are: Time, username, total number of followers, following, posts, likes, and comments.
 The two commands can simply be triggered using `crontab` (make sure to trigger `log_stats.py` several minutes after `crawl_profile_pi.py`).
 
 
