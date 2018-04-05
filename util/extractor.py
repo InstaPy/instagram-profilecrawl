@@ -127,11 +127,13 @@ def extract_information(browser, username):
 
     links = []
     links2 = []
-
     
     #list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
     #list links2 contains all the links collected so far
     
+    previouslen = 0
+    breaking = 0
+      
     while (len(links2) < num_of_posts):
       
       prev_divs = browser.find_elements_by_tag_name('main')      
@@ -146,6 +148,18 @@ def extract_information(browser, username):
       body_elem.send_keys(Keys.END)
       sleep(1.5)
    
+      ##remove bellow part to never break the scrolling script before reaching the num_of_posts
+      if (len(links2) == previouslen):
+          breaking += 1
+          print ("breaking in ",4-breaking,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 149 in extractor.py")
+      else:
+          breaking = 0
+      if breaking > 3:
+          print ("\nNot getting any more posts, ending scrolling.") 
+          sleep(2)
+          break
+      previouslen = len(links2)   
+      ##
 
   except NoSuchElementException as err:
     print('- Something went terribly wrong\n')
