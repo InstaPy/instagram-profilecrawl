@@ -166,9 +166,10 @@ def extract_information(browser, username):
   counter = 1  
   for link in links2:
     
-    print ("\n", counter , "/", len(links2))
+    #print ("\n", counter , "/", len(links2))
+    print ("\nScrapping link: ", counter , "/", len(links2))
     counter = counter + 1
-    print ("\nScrapping link: ", link)
+    #print ("\nScrapping link: ", link)
     browser.get(link)
     try:
       img, tags, likes, comments, date = extract_post_info(browser)
