@@ -9,7 +9,7 @@ Like e.g. the number of posts, followers, and the tags of the the posts
 #### Getting started
 Just do:
 ```bash
-git clone https://github.com/timgrossmann/instagram-profilecrawl.git
+git clone https://github.com/johnnychrome/instagram-profilecrawl.git
 ```
 
 It uses selenium to get all the information so install it with:
