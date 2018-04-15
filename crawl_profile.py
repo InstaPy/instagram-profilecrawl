@@ -17,6 +17,10 @@ chrome_options.add_argument('--lang=en-US')
 chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
 browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
 
+#SETTINGS:
+#set limit of posts to analyze:
+limit_amount = 12000
+
 # makes sure slower connections work as well        
 print ("Waiting 10 sec")
 browser.implicitly_wait(10)
@@ -26,7 +30,7 @@ try:
 
   for username in usernames:
     print('Extracting information from ' + username)
-    information, user_commented_list = extract_information(browser, username)
+    information, user_commented_list = extract_information(browser, username, limit_amount)
 
     with open('./profiles/' + username + '.json', 'w') as fp:
       json.dump(information, fp)
