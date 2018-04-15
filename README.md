@@ -76,9 +76,5 @@ The two commands can simply be triggered using `crontab` (make sure to trigger `
 }
 ```
 
-#### With the help of [Wordcloud](https://github.com/amueller/word_cloud) you could do something like that with your used tags
-![](http://i65.tinypic.com/2nkrrtg.png)
-
-<hr />
 
 ###### Have Fun & Feel Free to report any issues
