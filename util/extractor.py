@@ -148,7 +148,7 @@ def extract_information(browser, username):
       ##remove below part to never break the scrolling script before reaching the num_of_posts
       if (len(links2) == previouslen):
           pausing += 1
-          print ("pausing in ",4-pausing,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 149 in extractor.py")
+          print ("pausing in ",4-pausing,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 146 in extractor.py")
       else:
           pausing = 0
       if pausing > 3:
