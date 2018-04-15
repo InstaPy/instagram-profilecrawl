@@ -76,7 +76,7 @@ def extract_post_info(browser):
   date = post.find_element_by_tag_name('time').get_attribute("datetime")
   #print ("date is ", date)  
   
-  user_commented_list = []
+  
   if post.find_elements_by_tag_name('ul'):
     comment_list = post.find_element_by_tag_name('ul')
     comments = comment_list.find_elements_by_tag_name('li')
@@ -87,18 +87,15 @@ def extract_post_info(browser):
         comments[1].find_element_by_tag_name('button').click()
         comment_list = post.find_element_by_tag_name('ul')
         comments = comment_list.find_elements_by_tag_name('li')
-      #adding who commented into user_commented_list
-      for comm in comments:
-        user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
-        user_commented_list.append(user_commented[3])
+   
         
       tags = comments[0].text + ' ' + comments[1].text
     else:
       tags = comments[0].text
 
     tags = findall(r'#[A-Za-z0-9]*', tags)
-    print (len(user_commented_list), " comments.")
-  return img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
+    
+  return img, tags, int(likes), int(len(comments) - 1), date 
 
 
 def extract_information(browser, username):
@@ -132,7 +129,7 @@ def extract_information(browser, username):
     #list links2 contains all the links collected so far
     
     previouslen = 0
-    breaking = 0
+    pausing = 0
       
     while (len(links2) < num_of_posts):
       
@@ -148,16 +145,16 @@ def extract_information(browser, username):
       body_elem.send_keys(Keys.END)
       sleep(1.5)
    
-      ##remove bellow part to never break the scrolling script before reaching the num_of_posts
+      ##remove below part to never break the scrolling script before reaching the num_of_posts
       if (len(links2) == previouslen):
-          breaking += 1
-          print ("breaking in ",4-breaking,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 149 in extractor.py")
+          pausing += 1
+          print ("pausing in ",4-pausing,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 149 in extractor.py")
       else:
-          breaking = 0
-      if breaking > 3:
-          print ("\nNot getting any more posts, ending scrolling.") 
-          sleep(2)
-          break
+          pausing = 0
+      if pausing > 3:
+          print ("\nNot getting any more posts, pausing scrolling for 300s.") 
+          sleep(300)
+          #break
       previouslen = len(links2)   
       ##
 
@@ -167,8 +164,6 @@ def extract_information(browser, username):
   post_infos = []
 
   counter = 1  
-  #into user_commented_total_list I will add all username links who commented on any post of this user
-  user_commented_total_list = []
   for link in links2:
     
     print ("\n", counter , "/", len(links2))
@@ -176,7 +171,7 @@ def extract_information(browser, username):
     print ("\nScrapping link: ", link)
     browser.get(link)
     try:
-      img, tags, likes, comments, date, user_commented_list = extract_post_info(browser)
+      img, tags, likes, comments, date = extract_post_info(browser)
 
       post_infos.append({
         'img': img,
@@ -185,7 +180,6 @@ def extract_information(browser, username):
         'likes': likes,
         'comments': comments
       })
-      user_commented_total_list = user_commented_total_list + user_commented_list
     except NoSuchElementException:
       print('- Could not get information from post: ' + link)
 
@@ -202,23 +196,4 @@ def extract_information(browser, username):
     'posts': post_infos     
   }
 
-  print ("\nUser ", username, " has ",len(user_commented_total_list)," comments.")
-  
-  #sorts the list by frequencies, so users who comment the most are at the top
-  import collections
-  from operator import itemgetter, attrgetter
-  counter=collections.Counter(user_commented_total_list)
-  com = sorted(counter.most_common(), key=itemgetter(1,0), reverse=True)
-  com = map(lambda x: [x[0]] * x[1], com)
-  user_commented_total_list = [item for sublist in com for item in sublist]
-   
-  #remove duplicates preserving order (that's why not using set())
-  user_commented_list = []
-  last = ''
-  for i in range(len(user_commented_total_list)):
-    if username.lower() != user_commented_total_list[i]:
-      if last != user_commented_total_list[i]:
-        user_commented_list.append(user_commented_total_list[i])
-      last = user_commented_total_list[i]     
-
-  return information, user_commented_list
+  return information
