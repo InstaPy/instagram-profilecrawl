@@ -155,7 +155,7 @@ def extract_information(browser, username):
          print ("\nNot getting any more posts, ending scrolling.") 
          
          with open(filename, 'a') as out:
-          out.write(alias_name + ": Freeze at " + len(links2) + "/" + num_of_posts + "\n") 
+          out.write(alias_name + ": Freeze at " + str(len(links2)) + "/" + str(num_of_posts) + "\n") 
          out.close()
          sleep(2)
          break
