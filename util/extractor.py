@@ -129,7 +129,7 @@ def extract_information(browser, username):
     #list links2 contains all the links collected so far
     
     previouslen = 0
-    pausing = 0
+    breaking = 0
       
     while (len(links2) < num_of_posts):
       
@@ -143,18 +143,22 @@ def extract_information(browser, username):
       links2 = list(set(links2))   
       print ("Scrolling profile ", len(links2), "/", num_of_posts)
       body_elem.send_keys(Keys.END)
-      sleep(1.5)
+      sleep(2.5)
    
       ##remove below part to never break the scrolling script before reaching the num_of_posts
       if (len(links2) == previouslen):
-          pausing += 1
-          print ("pausing in ",4-pausing,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 146 in extractor.py")
+          breaking += 1
+          print ("pausing in ",4-breaking,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 146 in extractor.py")
       else:
-          pausing = 0
-      if pausing > 3:
-          print ("\nNot getting any more posts, pausing scrolling for 300s.") 
-          sleep(300)
-          #break
+          breaking = 0
+      if breaking > 3:
+         print ("\nNot getting any more posts, ending scrolling.") 
+         
+         with open(filename, 'a') as out:
+         out.write(alias_name + ": Freeze at " + len(links2) + "/" + num_of_posts + "\n") 
+         out.close()
+          sleep(2)
+         break
       previouslen = len(links2)   
       ##
 
