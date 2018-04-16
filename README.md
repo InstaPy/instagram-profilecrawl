@@ -48,7 +48,6 @@ This appends the collected profile info to `stats.csv`. Can be useful for monito
 The logged stats are: Time, username, total number of followers, following, posts, likes, and comments.
 The two commands can simply be triggered using `crontab` (make sure to trigger `log_stats.py` several minutes after `crawl_profile_pi.py`).
 
-
 #### The information will be saved in a JSON-File in ./profiles/{username}.json
 > Example of a files data
 ```
