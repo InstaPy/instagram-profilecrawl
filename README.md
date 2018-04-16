@@ -25,6 +25,9 @@ Now you can start it using:
 python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
 
+**Settings:**
+To limit the amount of posts to be analyzed, change variable limit_amount in crawl_profile.py. The value will be auto-changed to be upper multiplocation of 12. Default value is 12000.
+
 ### Run on Raspberry Pi
 To run the crawler on Raspberry Pi with Firefox, follow these steps:
 
@@ -45,8 +48,7 @@ This appends the collected profile info to `stats.csv`. Can be useful for monito
 The logged stats are: Time, username, total number of followers, following, posts, likes, and comments.
 The two commands can simply be triggered using `crontab` (make sure to trigger `log_stats.py` several minutes after `crawl_profile_pi.py`).
 
-
-#### The information will be saved in a JSON-File in ./profiles/{username}.json.
+#### The information will be saved in a JSON-File in ./profiles/{username}.json
 > Example of a files data
 ```
 {
@@ -75,6 +77,8 @@ The two commands can simply be triggered using `crontab` (make sure to trigger `
   "following": 310
 }
 ```
+
+The script also collects usernames of users who commented on the posts and saves it in ./profiles/{username}_commenters.txt file, sorted by comment frequency.
 
 #### With the help of [Wordcloud](https://github.com/amueller/word_cloud) you could do something like that with your used tags
 ![](http://i65.tinypic.com/2nkrrtg.png)

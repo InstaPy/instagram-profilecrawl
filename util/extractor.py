@@ -1,7 +1,7 @@
 """Methods to extract the data for the given usernames profile"""
 from time import sleep
 from re import findall
-
+import math
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
@@ -12,8 +12,7 @@ def get_user_info(browser):
   img_container = browser.find_element_by_class_name('_b0acm')
 
   infos = container.find_elements_by_class_name('_t98z6')
-  print ("infos: ", infos)
-                          
+                           
   alias_name = container.find_element_by_class_name('_ienqf')\
                         .find_element_by_tag_name('h1').text
   try:
@@ -100,8 +99,8 @@ def extract_post_info(browser):
     print (len(user_commented_list), " comments.")
   return img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
 
-
-def extract_information(browser, username):
+                                                  
+def extract_information(browser, username, limit_amount):
   """Get all the information for the given username"""
 
   browser.get('https://www.instagram.com/' + username)
@@ -109,6 +108,9 @@ def extract_information(browser, username):
   try:
     alias_name, bio, prof_img, num_of_posts, followers, following \
     = get_user_info(browser)
+    if limit_amount <1 :
+        limit_amount = 999999
+    num_of_posts = min(limit_amount, num_of_posts)
   except:
     print ("\nError: Couldn't get user profile.\nTerminating")
     quit()
@@ -133,7 +135,8 @@ def extract_information(browser, username):
     
     previouslen = 0
     breaking = 0
-      
+    
+    print ("Getting only first",12*math.ceil(num_of_posts/12),"posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")  
     while (len(links2) < num_of_posts):
       
       prev_divs = browser.find_elements_by_tag_name('main')      
@@ -144,7 +147,7 @@ def extract_information(browser, username):
         if "/p/" in link:
           links2.append(link) 
       links2 = list(set(links2))   
-      print ("Scrolling profile ", len(links2), "/", num_of_posts)
+      print ("Scrolling profile ", len(links2), "/", 12*math.ceil(num_of_posts/12))
       body_elem.send_keys(Keys.END)
       sleep(1.5)
    
@@ -169,10 +172,12 @@ def extract_information(browser, username):
   counter = 1  
   #into user_commented_total_list I will add all username links who commented on any post of this user
   user_commented_total_list = []
+  
   for link in links2:
     
     print ("\n", counter , "/", len(links2))
     counter = counter + 1
+    
     print ("\nScrapping link: ", link)
     browser.get(link)
     try:
