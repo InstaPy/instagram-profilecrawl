@@ -25,10 +25,18 @@ def get_user_info(browser):
   print ("\nbio: ", bio,"\n")
   prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
   num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
-  followers = infos[1].text.split(' ')[0].replace(',', '').replace('.', '')
-  followers = int(followers.replace('k', '00').replace('m', '00000'))
-  following = infos[2].text.split(' ')[0].replace(',', '').replace('.', '')
-  following = int(following.replace('k', '00'))
+  followers = str(infos[1].text.split(' ')[0].replace(',', ''))
+    if followers.find('.') != -1:
+      followers = followers.replace('.', '')
+      followers = int(followers.replace('k', '00').replace('m', '00000'))
+    else:
+      followers = int(followers.replace('k', '000').replace('m', '000000'))
+  following = str(infos[2].text.split(' ')[0].replace(',', ''))
+    if following.find('.') != -1:
+      following = following.replace('.', '')
+      following = int(following.replace('k', '00').replace('m', '00000'))
+    else:
+      following = int(following.replace('k', '000').replace('m', '000000'))
 
   return alias_name, bio, prof_img, num_of_posts, followers, following
 
