@@ -67,7 +67,7 @@ The two commands can simply be triggered using `crontab` (make sure to trigger `
       },
       "img": "https://scontent.cdninstagram.com/t51.2885-15/e15/p640x640/16585292_1355568261161749_3055111083476910080_n.jpg?ig_cache_key=MTQ0ODY3MjA3MTQyMDA3Njg4MA%3D%3D.2",
       "date": "2018-04-26T15:07:32.000Z",
-      "tags": ["#fun", "#good", "#goodday", "#goodlife", "#happy", "#goodtime", "#funny", ...],,
+      "tags": ["#fun", "#good", "#goodday", "#goodlife", "#happy", "#goodtime", "#funny", ...],
       "likes": 284,
       "comments": 12
      },
