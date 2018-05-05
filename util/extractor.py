@@ -4,6 +4,7 @@ from re import findall
 import math
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+import requests
 
 def get_user_info(browser):
   """Get the basic user info from the profile screen"""
@@ -45,6 +46,38 @@ def extract_post_info(browser):
   """Get the information from the current post"""
 
   post = browser.find_element_by_class_name('_622au')
+
+  # Get caption
+  caption = ''
+  try:
+    username = post.find_element_by_class_name('_iadoq').text
+    caption_username = post.find_element_by_class_name('_b0tqa').find_element_by_class_name('_ezgzd').find_element_by_tag_name('a').text
+    if username == caption_username:
+        caption = post.find_element_by_class_name('_b0tqa').find_element_by_class_name('_ezgzd').find_element_by_tag_name('span').text
+  except:
+    pass
+
+  # Get location details
+  location_url = ''
+  location_name = ''
+  location_id = 0
+  lat = ''
+  lng = ''
+  try:
+    # Location url and name
+    x = post.find_element_by_class_name('_60iqg').find_elements_by_tag_name('a')
+    location_url = x[0].get_attribute('href')
+    location_name = x[0].text
+
+    # Longitude and latitude
+    location_id = location_url.strip('https://www.instagram.com/explore/locations/').split('/')[0]
+    url = 'https://www.instagram.com/explore/locations/' + location_id + '/?__a=1'
+    response = requests.get(url)
+    data = response.json()
+    lat = data['graphql']['location']['lat']
+    lng = data['graphql']['location']['lng']
+  except:
+    pass
 
   #print('BEFORE IMG')
 
@@ -105,7 +138,7 @@ def extract_post_info(browser):
 
     tags = findall(r'#[A-Za-z0-9]*', tags)
     print (len(user_commented_list), " comments.")
-  return img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
+    return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
 
                                                   
 def extract_information(browser, username, limit_amount):
@@ -189,9 +222,19 @@ def extract_information(browser, username, limit_amount):
     print ("\nScrapping link: ", link)
     browser.get(link)
     try:
-      img, tags, likes, comments, date, user_commented_list = extract_post_info(browser)
+      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list = extract_post_info(browser)
+
+      location = {
+        'location_url': location_url,
+        'location_name': location_name,
+        'location_id': location_id,
+        'latitude': lat,
+        'longitude': lng,
+      }
 
       post_infos.append({
+        'caption': caption,
+        'location': location,
         'img': img,
         'date': date,
         'tags': tags,
