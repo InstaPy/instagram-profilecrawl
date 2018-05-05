@@ -57,16 +57,34 @@ The two commands can simply be triggered using `crontab` (make sure to trigger `
   "num_of_posts": 127,
   "posts": [
     {
-      "tags": ["#fun", "#good", "#goodday", "#goodlife", "#happy", "#goodtime", "#funny", ...],
-      "comments": 12,
+      "caption": "It was a good day",
+      "location": {
+        "location_url": "https://www.instagram.com/explore/locations/345421482541133/caffe-fernet/",
+        "location_name": "Caffe Fernet",
+        "location_id": "345421482541133",
+        "latitude": 1.2839,
+        "longitude": 103.85333
+      },
       "img": "https://scontent.cdninstagram.com/t51.2885-15/e15/p640x640/16585292_1355568261161749_3055111083476910080_n.jpg?ig_cache_key=MTQ0ODY3MjA3MTQyMDA3Njg4MA%3D%3D.2",
-      "likes": 284
+      "date": "2018-04-26T15:07:32.000Z",
+      "tags": ["#fun", "#good", "#goodday", "#goodlife", "#happy", "#goodtime", "#funny", ...],,
+      "likes": 284,
+      "comments": 12
      },
      {
-      "tags": ["#vegan", "#veganfood", "#vegansofig", "#veganfoodporn", "#vegansofig", ...],
-      "comments": 6,
+      "caption": "Wild Rocket Salad with Japanese Sesame Sauce",
+      "location": {
+        "location_url": "https://www.instagram.com/explore/locations/318744905241462/junior-kuppanna-restaurant-singapore/",
+        "location_name": "Junior Kuppanna Restaurant, Singapore",
+        "location_id": "318744905241462",
+        "latitude": 1.31011,
+        "longitude": 103.85672
+      },
       "img": "https://scontent.cdninstagram.com/t51.2885-15/e35/16122741_405776919775271_8171424637851271168_n.jpg?ig_cache_key=MTQ0Nzk0Nzg2NDI2ODc5MTYzNw%3D%3D.2",
-      "likes": 206
+      "date": "2018-04-26T15:07:32.000Z",
+      "tags": ["#vegan", "#veganfood", "#vegansofig", "#veganfoodporn", "#vegansofig", ...],
+      "likes": 206,
+      "comments": 6
      },
      .
      .
