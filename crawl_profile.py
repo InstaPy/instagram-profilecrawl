@@ -33,7 +33,7 @@ try:
     information, user_commented_list = extract_information(browser, username, limit_amount)
 
     with open('./profiles/' + username + '.json', 'w') as fp:
-      json.dump(information, fp)
+      fp.write(json.dumps(information, indent=4))
                                                      
     print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")
     file = open("./profiles/" + username + "_commenters.txt","w") 
