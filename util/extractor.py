@@ -8,15 +8,14 @@ from selenium.webdriver.common.keys import Keys
 def get_user_info(browser):
   """Get the basic user info from the profile screen"""
 
-  container = browser.find_element_by_class_name('_mesn5')
-  img_container = browser.find_element_by_class_name('_b0acm')
-
-  infos = container.find_elements_by_class_name('_t98z6')
-                           
-  alias_name = container.find_element_by_class_name('_ienqf')\
+  container = browser.find_element_by_class_name('v9tJq')
+  print ("ok")
+  img_container = browser.find_element_by_class_name('RR-M-')
+  infos = container.find_elements_by_class_name('Y8-fY ')                           
+  alias_name = container.find_element_by_class_name('-vDIg')\
                         .find_element_by_tag_name('h1').text
   try:
-    bio = container.find_element_by_class_name('_tb97a')\
+    bio = container.find_element_by_class_name('-vDIg')\
                         .find_element_by_tag_name('span').text                      
   except:
     print ("\nBio is empty")
@@ -29,24 +28,25 @@ def get_user_info(browser):
   followers = int(followers.replace('k', '00').replace('m', '00000'))
   following = infos[2].text.split(' ')[0].replace(',', '').replace('.', '')
   following = int(following.replace('k', '00'))
-
   return alias_name, bio, prof_img, num_of_posts, followers, following
 
 
 def extract_post_info(browser):
   """Get the information from the current post"""
 
-  post = browser.find_element_by_class_name('_622au')
+  post = browser.find_element_by_class_name('ltEKP')
 
   #print('BEFORE IMG')
 
   imgs = post.find_elements_by_tag_name('img')
   img = ''
   
+  #print ("imgs:", imgs)
   
   if len(imgs) >= 2:
     img = imgs[1].get_attribute('src')
-    
+  else:
+    img = imgs[0].get_attribute('src')  
 
   likes = 0
   
@@ -71,9 +71,9 @@ def extract_post_info(browser):
   # or the button to display all the comments
   comments = []
   tags = []
-  
-  date = post.find_element_by_tag_name('time').get_attribute("datetime")
-  #print ("date is ", date)  
+  #print ("gonna take date")
+  date = post.find_element_by_xpath('//a/time').get_attribute("datetime")
+  print ("date is ", date)  
   
   user_commented_list = []
   if post.find_elements_by_tag_name('ul'):
@@ -136,7 +136,7 @@ def extract_information(browser, username, limit_amount):
     previouslen = 0
     breaking = 0
     
-    print ("Getting only first",12*math.ceil(num_of_posts/12),"posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")  
+    print ("Getting first",12*math.ceil(num_of_posts/12),"posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")  
     while (len(links2) < num_of_posts):
       
       prev_divs = browser.find_elements_by_tag_name('main')      
@@ -191,9 +191,9 @@ def extract_information(browser, username, limit_amount):
         'comments': comments
       })
       user_commented_total_list = user_commented_total_list + user_commented_list
-    except NoSuchElementException:
+    except NoSuchElementException as err:
       print('- Could not get information from post: ' + link)
-
+      print (err)
 
 
   information = {
