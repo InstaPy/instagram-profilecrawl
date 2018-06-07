@@ -3,10 +3,11 @@ import json
 import datetime
 import csv
 import argparse
+from .settings import Settings
 
 
 def log_stats(username):
-    profile_file = 'profiles/' + username + '.json'
+    profile_file = Settings.profile_location + '/' + username + '.json'
     with open(profile_file, 'r') as f_profile:
         profile = json.load(f_profile)
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
