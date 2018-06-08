@@ -2,6 +2,7 @@
 
 """Goes through all usernames and collects their information"""
 import json
+from .settings import Settings
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -17,10 +18,6 @@ chrome_options.add_argument('--headless')
 chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
 browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
 
-#SETTINGS:
-#set limit of posts to analyze:
-limit_amount = 12000
-
 # makes sure slower connections work as well        
 print ("Waiting 10 sec")
 browser.implicitly_wait(10)
@@ -30,13 +27,13 @@ try:
 
   for username in usernames:
     print('Extracting information from ' + username)
-    information, user_commented_list = extract_information(browser, username, limit_amount)
+    information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
 
-    with open('./profiles/' + username + '.json', 'w') as fp:
+    with open(Settings.profile_location + '/' + username + '.json', 'w') as fp:
       fp.write(json.dumps(information, indent=4))
                                                      
     print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")
-    file = open("./profiles/" + username + "_commenters.txt","w") 
+    file = open(Settings.profile_commentors_location + '/' + username + "_commenters.txt","w") 
     for line in user_commented_list:
       file.write(line)
       file.write("\n")
