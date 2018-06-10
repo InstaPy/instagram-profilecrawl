@@ -48,13 +48,21 @@ def extract_post_info(browser):
 
   # Get caption
   caption = ''
+  caption_username = ''
+  #try:
+  username = post.find_element_by_class_name('e1e1d').text
+  #print ("username:",username)
   try:
-    username = post.find_element_by_class_name('_iadoq').text
-    caption_username = post.find_element_by_class_name('_b0tqa').find_element_by_class_name('_ezgzd').find_element_by_tag_name('a').text
-    if username == caption_username:
-        caption = post.find_element_by_class_name('_b0tqa').find_element_by_class_name('_ezgzd').find_element_by_tag_name('span').text
+    caption_username = post.find_elements_by_class_name('gElp9')[0].find_element_by_tag_name('a').text
   except:
-    pass
+    pass  
+  #print ("caption username:",caption_username)
+  if username == caption_username:
+      caption = post.find_element_by_class_name('Xl2Pu').find_element_by_class_name('gElp9').find_element_by_tag_name('span').text
+      print ("caption:",caption)
+  #except Exception as err: 
+  #  print (err)
+    
 
   # Get location details
   location_url = ''
@@ -64,22 +72,22 @@ def extract_post_info(browser):
   lng = ''
   try:
     # Location url and name
-    x = post.find_element_by_class_name('_60iqg').find_elements_by_tag_name('a')
+    x = post.find_element_by_class_name('M30cS').find_elements_by_tag_name('a')
     location_url = x[0].get_attribute('href')
     location_name = x[0].text
-
+  
     # Longitude and latitude
     location_id = location_url.strip('https://www.instagram.com/explore/locations/').split('/')[0]
     url = 'https://www.instagram.com/explore/locations/' + location_id + '/?__a=1'
     response = requests.get(url)
     data = response.json()
     lat = data['graphql']['location']['lat']
-    lng = data['graphql']['location']['lng']
+    lng = data['graphql']['location']['lng']      
   except:
     pass
 
   #print('BEFORE IMG')
-
+  
   imgs = post.find_elements_by_tag_name('img')
   img = ''
   
@@ -139,7 +147,7 @@ def extract_post_info(browser):
 
     tags = findall(r'#[A-Za-z0-9]*', tags)
     print (len(user_commented_list), " comments.")
-    return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
+  return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
 
                                                   
 def extract_information(browser, username, limit_amount):
