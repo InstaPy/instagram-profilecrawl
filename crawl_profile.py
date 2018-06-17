@@ -2,7 +2,7 @@
 
 """Goes through all usernames and collects their information"""
 import json
-from .util.settings import Settings
+from util.settings import Settings
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
