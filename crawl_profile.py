@@ -2,7 +2,9 @@
 
 """Goes through all usernames and collects their information"""
 import json
+import datetime
 from util.settings import Settings
+from util.datasaver import Datasaver
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -28,16 +30,11 @@ try:
   for username in usernames:
     print('Extracting information from ' + username)
     information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
-
-    with open(Settings.profile_location + '/' + username + '.json', 'w') as fp:
-      fp.write(json.dumps(information, indent=4))
+    Datasaver.save_profile_json(username,information)
                                                      
     print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")
-    file = open(Settings.profile_commentors_location + '/' + username + "_commenters.txt","w") 
-    for line in user_commented_list:
-      file.write(line)
-      file.write("\n")
-    file.close()     
+
+    Datasaver.save_profile_commenters_txt(username,user_commented_list)
     print ("\nFinished. The json file and nicknames of users who commented were saved in profiles directory.\n")
 
 except KeyboardInterrupt:
