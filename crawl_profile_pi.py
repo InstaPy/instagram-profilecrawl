@@ -7,7 +7,7 @@ from selenium import webdriver
 from pyvirtualdisplay import Display
 from util.cli_helper import get_all_user_names
 from util.extractor import extract_information
-from .settings import Settings
+from util.settings import Settings
 
 
 display = Display(visible=0, size=(1024, 768))

@@ -12,7 +12,13 @@ def get_user_info(browser):
   container = browser.find_element_by_class_name('v9tJq')
   print ("ok")
   img_container = browser.find_element_by_class_name('RR-M-')
-  infos = container.find_elements_by_class_name('Y8-fY ')                           
+  infos = container.find_elements_by_class_name('Y8-fY ')
+  try:
+    bio_url = container.find_elements_by_class_name('yLUwa').get_attribute('innerHTML')
+  except:
+    print ("\nUrl is empty")
+    bio_url = ""
+
   alias_name = container.find_element_by_class_name('-vDIg')\
                         .find_element_by_tag_name('h1').text
   try:
@@ -23,6 +29,7 @@ def get_user_info(browser):
     bio = ""
   print ("\nalias name: ", alias_name)
   print ("\nbio: ", bio,"\n")
+  print("\nurl: ", bio_url, "\n")
   prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
   num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
   followers = str(infos[1].text.split(' ')[0].replace(',', ''))
@@ -38,7 +45,7 @@ def get_user_info(browser):
   else:
     following = int(following.replace('k', '000').replace('m', '000000'))
 
-  return alias_name, bio, prof_img, num_of_posts, followers, following
+  return alias_name, bio, prof_img, num_of_posts, followers, following, bio_url
 
 
 def extract_post_info(browser):
@@ -156,7 +163,7 @@ def extract_information(browser, username, limit_amount):
   browser.get('https://www.instagram.com/' + username)
 
   try:
-    alias_name, bio, prof_img, num_of_posts, followers, following \
+    alias_name, bio, prof_img, num_of_posts, followers, following, bio_url \
     = get_user_info(browser)
     if limit_amount <1 :
         limit_amount = 999999
@@ -264,6 +271,7 @@ def extract_information(browser, username, limit_amount):
     'num_of_posts': num_of_posts,
     'followers': followers,
     'following': following,
+    'bio_url': bio_url,
     'posts': post_infos     
   }
 

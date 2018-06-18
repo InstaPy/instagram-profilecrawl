@@ -3,7 +3,7 @@ import json
 import datetime
 import csv
 import argparse
-from .settings import Settings
+from util.settings import Settings
 
 
 def log_stats(username):
