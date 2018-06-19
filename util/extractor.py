@@ -5,6 +5,7 @@ import math
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import requests
+from util.settings import Settings
 
 def get_user_info(browser):
   """Get the basic user info from the profile screen"""
@@ -229,7 +230,12 @@ def extract_information(browser, username, limit_amount):
   counter = 1  
   #into user_commented_total_list I will add all username links who commented on any post of this user
   user_commented_total_list = []
-  
+
+  if Settings.scrap_posts_infos is False:
+    print("\nSetting: No Link will be scraped")
+    links2 = []
+
+
   for link in links2:
     
     print ("\n", counter , "/", len(links2))
