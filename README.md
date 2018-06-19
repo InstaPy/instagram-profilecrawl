@@ -69,7 +69,10 @@ The two commands can simply be triggered using `crontab` (make sure to trigger `
       "date": "2018-04-26T15:07:32.000Z",
       "tags": ["#fun", "#good", "#goodday", "#goodlife", "#happy", "#goodtime", "#funny", ...],
       "likes": 284,
-      "comments": 12
+      "comments": {
+        "count": 0,
+        "list": [],
+       },
      },
      {
       "caption": "Wild Rocket Salad with Japanese Sesame Sauce",
@@ -84,7 +87,15 @@ The two commands can simply be triggered using `crontab` (make sure to trigger `
       "date": "2018-04-26T15:07:32.000Z",
       "tags": ["#vegan", "#veganfood", "#vegansofig", "#veganfoodporn", "#vegansofig", ...],
       "likes": 206,
-      "comments": 6
+      "comments": {
+        "count": 1,
+        "list": [
+          {
+            "user": "pastaglueck",
+            "comment": "nice veganfood"
+           },
+         ],
+       },
      },
      .
      .

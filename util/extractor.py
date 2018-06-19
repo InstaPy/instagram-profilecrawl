@@ -135,6 +135,7 @@ def extract_post_info(browser):
   print ("date is ", date)  
   
   user_commented_list = []
+  user_comments = []
   try:
     if post.find_elements_by_tag_name('ul'):
       comment_list = post.find_element_by_tag_name('ul')
@@ -142,7 +143,6 @@ def extract_post_info(browser):
 
       if len(comments) > 1:
         # load hidden comments
-        print("TEXT1:" + comments[1].text)
         while (comments[1].text.lower() == 'load more comments' or comments[1].text.lower().startswith('view all')):
           comments[1].find_element_by_tag_name('a').click()
           comment_list = post.find_element_by_tag_name('ul')
@@ -151,6 +151,17 @@ def extract_post_info(browser):
         for comm in comments:
           user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
           user_commented_list.append(user_commented[3])
+          if(Settings.output_comments is True):
+            try:
+              user_comment = {
+                'user' : user_commented[3],
+                'comment' : comm.find_element_by_tag_name('span').text
+              }
+              print (user_commented[3] + " -- " + comm.find_element_by_tag_name('span').text)
+
+              user_comments.append(user_comment)
+            except:
+              pass
         tags = comments[0].text + ' ' + comments[1].text
       else:
         tags = comments[0].text
@@ -160,7 +171,7 @@ def extract_post_info(browser):
   except:
     pass
 
-  return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
+  return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list, user_comments
 
                                                   
 def extract_information(browser, username, limit_amount):
@@ -249,7 +260,7 @@ def extract_information(browser, username, limit_amount):
     print ("\nScrapping link: ", link)
     browser.get(link)
     try:
-      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list = extract_post_info(browser)
+      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list,user_comments = extract_post_info(browser)
 
       location = {
         'location_url': location_url,
@@ -266,7 +277,11 @@ def extract_information(browser, username, limit_amount):
         'date': date,
         'tags': tags,
         'likes': likes,
-        'comments': comments
+        'comments': {
+          'count':comments,
+          'list': user_comments
+        }
+
       })
       user_commented_total_list = user_commented_total_list + user_commented_list
     except NoSuchElementException as err:
