@@ -6,6 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import requests
 from util.settings import Settings
+import datetime
 
 def get_user_info(browser):
   """Get the basic user info from the profile screen"""
@@ -282,6 +283,7 @@ def extract_information(browser, username, limit_amount):
     'followers': followers,
     'following': following,
     'bio_url': bio_url,
+    'scrapped': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     'posts': post_infos     
   }
 
