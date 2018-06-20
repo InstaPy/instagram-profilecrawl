@@ -6,6 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import requests
 from util.settings import Settings
+import datetime
 
 def get_user_info(browser):
   """Get the basic user info from the profile screen"""
@@ -15,7 +16,7 @@ def get_user_info(browser):
   img_container = browser.find_element_by_class_name('RR-M-')
   infos = container.find_elements_by_class_name('Y8-fY ')
   try:
-    bio_url = container.find_elements_by_class_name('yLUwa').get_attribute('innerHTML')
+    bio_url = container.find_elements_by_class_name('yLUwa').get_attribute("innerHTML")
   except:
     print ("\nUrl is empty")
     bio_url = ""
@@ -134,28 +135,43 @@ def extract_post_info(browser):
   print ("date is ", date)  
   
   user_commented_list = []
-  if post.find_elements_by_tag_name('ul'):
-    comment_list = post.find_element_by_tag_name('ul')
-    comments = comment_list.find_elements_by_tag_name('li')
-    
-    if len(comments) > 1:
-      # load hidden comments
-      while (comments[1].text == 'load more comments'):
-        comments[1].find_element_by_tag_name('button').click()
-        comment_list = post.find_element_by_tag_name('ul')
-        comments = comment_list.find_elements_by_tag_name('li')
-      #adding who commented into user_commented_list
-      for comm in comments:
-        user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
-        user_commented_list.append(user_commented[3])
-        
-      tags = comments[0].text + ' ' + comments[1].text
-    else:
-      tags = comments[0].text
+  user_comments = []
+  try:
+    if post.find_elements_by_tag_name('ul'):
+      comment_list = post.find_element_by_tag_name('ul')
+      comments = comment_list.find_elements_by_tag_name('li')
 
-    tags = findall(r'#[A-Za-z0-9]*', tags)
-    print (len(user_commented_list), " comments.")
-  return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list
+      if len(comments) > 1:
+        # load hidden comments
+        while (comments[1].text.lower() == 'load more comments' or comments[1].text.lower().startswith('view all')):
+          comments[1].find_element_by_tag_name('a').click()
+          comment_list = post.find_element_by_tag_name('ul')
+          comments = comment_list.find_elements_by_tag_name('li')
+        #adding who commented into user_commented_list
+        for comm in comments:
+          user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
+          user_commented_list.append(user_commented[3])
+          if(Settings.output_comments is True):
+            try:
+              user_comment = {
+                'user' : user_commented[3],
+                'comment' : comm.find_element_by_tag_name('span').text
+              }
+              print (user_commented[3] + " -- " + comm.find_element_by_tag_name('span').text)
+
+              user_comments.append(user_comment)
+            except:
+              pass
+        tags = comments[0].text + ' ' + comments[1].text
+      else:
+        tags = comments[0].text
+
+      tags = findall(r'#[A-Za-z0-9]*', tags)
+      print (len(user_commented_list), " comments.")
+  except:
+    pass
+
+  return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list, user_comments
 
                                                   
 def extract_information(browser, username, limit_amount):
@@ -244,7 +260,7 @@ def extract_information(browser, username, limit_amount):
     print ("\nScrapping link: ", link)
     browser.get(link)
     try:
-      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list = extract_post_info(browser)
+      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list,user_comments = extract_post_info(browser)
 
       location = {
         'location_url': location_url,
@@ -261,7 +277,11 @@ def extract_information(browser, username, limit_amount):
         'date': date,
         'tags': tags,
         'likes': likes,
-        'comments': comments
+        'comments': {
+          'count':comments,
+          'list': user_comments
+        }
+
       })
       user_commented_total_list = user_commented_total_list + user_commented_list
     except NoSuchElementException as err:
@@ -278,6 +298,7 @@ def extract_information(browser, username, limit_amount):
     'followers': followers,
     'following': following,
     'bio_url': bio_url,
+    'scrapped': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     'posts': post_infos     
   }
 

@@ -10,3 +10,4 @@ class Settings:
     profile_commentors_file_with_timestamp = True
     limit_amount = 12000
     scrap_posts_infos = True
+    output_comments = False
