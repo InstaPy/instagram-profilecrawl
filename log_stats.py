@@ -10,7 +10,7 @@ def log_stats(username):
     profile_file = Settings.profile_location + '/' + username + '.json'
     with open(profile_file, 'r') as f_profile:
         profile = json.load(f_profile)
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+        timestamp = profile['scrapped']
 
         print('Reading crawled profile info of {}'.format(username))
         print(profile)
@@ -20,7 +20,7 @@ def log_stats(username):
         comments = 0
         for post in profile['posts']:
             likes += post['likes']
-            comments += post['comments']
+            comments += post['comments']['count']
 
         # append collected stats to stats.csv
         with open('stats.csv', 'a', newline='') as f_stats:
