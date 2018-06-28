@@ -223,12 +223,12 @@ def extract_information(browser, username, limit_amount):
       links2 = list(set(links2))   
       print ("Scrolling profile ", len(links2), "/", 12*math.ceil(num_of_posts/12))
       body_elem.send_keys(Keys.END)
-      sleep(1.5)
+      sleep(Settings.sleep_time_between_post_scroll)
    
       ##remove bellow part to never break the scrolling script before reaching the num_of_posts
       if (len(links2) == previouslen):
           breaking += 1
-          print ("breaking in ",4-breaking,"...\nIf you believe this is only caused by slow internet, increase sleep time in line 149 in extractor.py")
+          print ("breaking in ",4-breaking,"...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
       else:
           breaking = 0
       if breaking > 3:

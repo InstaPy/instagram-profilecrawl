@@ -11,3 +11,4 @@ class Settings:
     limit_amount = 12000
     scrap_posts_infos = True
     output_comments = False
+    sleep_time_between_post_scroll = 1.5
