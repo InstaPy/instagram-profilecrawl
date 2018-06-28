@@ -171,7 +171,20 @@ def extract_post_info(browser):
   except:
     pass
 
-  return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list, user_comments
+  mentions = []
+  mention_list = []
+  if (Settings.mentions is True):
+    print(len(post.find_elements_by_class_name('xUdfV')), "mentions")
+    try:
+      if post.find_elements_by_class_name('xUdfV'): #perhaps JYWcJ
+        mention_list = post.find_elements_by_class_name('xUdfV') #perhaps JYWcJ
+        for mention in mention_list:
+          user_mention = mention.get_attribute("href").split('/')
+          #print(user_mention[3])
+          mentions.append(user_mention[3])
+    except:
+      pass
+  return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list, user_comments, mentions
 
                                                   
 def extract_information(browser, username, limit_amount):
@@ -260,7 +273,7 @@ def extract_information(browser, username, limit_amount):
     print ("\nScrapping link: ", link)
     browser.get(link)
     try:
-      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list,user_comments = extract_post_info(browser)
+      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list,user_comments,mentions = extract_post_info(browser)
 
       location = {
         'location_url': location_url,
@@ -280,8 +293,8 @@ def extract_information(browser, username, limit_amount):
         'comments': {
           'count':comments,
           'list': user_comments
-        }
-
+        },
+        'mentions': mentions
       })
       user_commented_total_list = user_commented_total_list + user_commented_list
     except NoSuchElementException as err:
