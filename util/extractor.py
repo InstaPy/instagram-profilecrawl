@@ -186,69 +186,56 @@ def extract_post_info(browser):
       pass
   return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(len(comments) - 1), date, user_commented_list, user_comments, mentions
 
-                                                  
-def extract_information(browser, username, limit_amount):
-  """Get all the information for the given username"""
 
-  browser.get('https://www.instagram.com/' + username)
+def extract_posts(browser, num_of_posts_to_do):
+  """Get all posts from user"""
+  links = []
+  links2 = []
 
-  try:
-    alias_name, bio, prof_img, num_of_posts, followers, following, bio_url \
-    = get_user_info(browser)
-    if limit_amount <1 :
-        limit_amount = 999999
-    num_of_posts = min(limit_amount, num_of_posts)
-  except:
-    print ("\nError: Couldn't get user profile.\nTerminating")
-    quit()
-  prev_divs = browser.find_elements_by_class_name('_70iju')
-
-
+  # list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
+  # list links2 contains all the links collected so far
   try:
     body_elem = browser.find_element_by_tag_name('body')
 
-    #load_button = body_elem.find_element_by_xpath\
+    # load_button = body_elem.find_element_by_xpath\
     #  ('//a[contains(@class, "_1cr2e _epyes")]')
-    #body_elem.send_keys(Keys.END)
-    #sleep(3)
+    # body_elem.send_keys(Keys.END)
+    # sleep(3)
 
-    #load_button.click()
+    # load_button.click()
 
-    links = []
-    links2 = []
-    
-    #list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
-    #list links2 contains all the links collected so far
-    
+
     previouslen = 0
     breaking = 0
-    
-    print ("Getting first",12*math.ceil(num_of_posts/12),"posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")  
-    while (len(links2) < num_of_posts):
-      
-      prev_divs = browser.find_elements_by_tag_name('main')      
-      links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]  
+
+    print("Getting first", 12 * math.ceil(num_of_posts_to_do / 12),
+          "posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
+    while (len(links2) < num_of_posts_to_do):
+
+      prev_divs = browser.find_elements_by_tag_name('main')
+      links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
       links = sum([[link_elem.get_attribute('href')
-        for link_elem in elems] for elems in links_elems], [])
+                    for link_elem in elems] for elems in links_elems], [])
       for link in links:
         if "/p/" in link:
-          links2.append(link) 
-      links2 = list(set(links2))   
-      print ("Scrolling profile ", len(links2), "/", 12*math.ceil(num_of_posts/12))
+          links2.append(link)
+      links2 = list(set(links2))
+      print("Scrolling profile ", len(links2), "/", 12 * math.ceil(num_of_posts_to_do / 12))
       body_elem.send_keys(Keys.END)
       sleep(Settings.sleep_time_between_post_scroll)
-   
+
       ##remove bellow part to never break the scrolling script before reaching the num_of_posts
       if (len(links2) == previouslen):
-          breaking += 1
-          print ("breaking in ",4-breaking,"...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
+        breaking += 1
+        print("breaking in ", 4 - breaking,
+              "...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
       else:
-          breaking = 0
+        breaking = 0
       if breaking > 3:
-          print ("\nNot getting any more posts, ending scrolling.") 
-          sleep(2)
-          break
-      previouslen = len(links2)   
+        print("\nNot getting any more posts, ending scrolling.")
+        sleep(2)
+        break
+      previouslen = len(links2)
       ##
 
   except NoSuchElementException as err:
@@ -256,24 +243,20 @@ def extract_information(browser, username, limit_amount):
 
   post_infos = []
 
-  counter = 1  
-  #into user_commented_total_list I will add all username links who commented on any post of this user
+  counter = 1
+  # into user_commented_total_list I will add all username links who commented on any post of this user
   user_commented_total_list = []
 
-  if Settings.scrap_posts_infos is False:
-    print("\nSetting: No Link will be scraped")
-    links2 = []
-
-
   for link in links2:
-    
-    print ("\n", counter , "/", len(links2))
+
+    print("\n", counter, "/", len(links2))
     counter = counter + 1
-    
-    print ("\nScrapping link: ", link)
+
+    print("\nScrapping link: ", link)
     browser.get(link)
     try:
-      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list,user_comments,mentions = extract_post_info(browser)
+      caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list, user_comments, mentions = extract_post_info(
+        browser)
 
       location = {
         'location_url': location_url,
@@ -291,7 +274,7 @@ def extract_information(browser, username, limit_amount):
         'tags': tags,
         'likes': likes,
         'comments': {
-          'count':comments,
+          'count': comments,
           'list': user_comments
         },
         'mentions': mentions
@@ -299,7 +282,35 @@ def extract_information(browser, username, limit_amount):
       user_commented_total_list = user_commented_total_list + user_commented_list
     except NoSuchElementException as err:
       print('- Could not get information from post: ' + link)
-      print (err)
+      print(err)
+  return post_infos, user_commented_total_list
+
+
+def extract_information(browser, username, limit_amount):
+  """Get all the information for the given username"""
+
+  browser.get('https://www.instagram.com/' + username)
+  num_of_posts_to_do = 999999
+  try:
+    alias_name, bio, prof_img, num_of_posts, followers, following, bio_url \
+    = get_user_info(browser)
+    if limit_amount <1 :
+        limit_amount = 999999
+    num_of_posts_to_do = min(limit_amount, num_of_posts)
+  except:
+    print ("\nError: Couldn't get user profile.\nTerminating")
+    quit()
+  prev_divs = browser.find_elements_by_class_name('_70iju')
+
+  post_infos = []
+  user_commented_total_list = []
+  if Settings.scrap_posts_infos is True:
+    try:
+      post_infos,user_commented_total_list = extract_posts(browser,num_of_posts_to_do)
+    except:
+      pass
+
+
 
 
   information = {
