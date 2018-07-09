@@ -15,12 +15,6 @@ def get_user_info(browser):
   print ("ok")
   img_container = browser.find_element_by_class_name('RR-M-')
   infos = container.find_elements_by_class_name('Y8-fY ')
-  try:
-    bio_url = container.find_elements_by_class_name('yLUwa').get_attribute("innerHTML")
-  except:
-    print ("\nUrl is empty")
-    bio_url = ""
-
   alias_name = container.find_element_by_class_name('-vDIg')\
                         .find_element_by_tag_name('h1').text
   try:
@@ -29,8 +23,13 @@ def get_user_info(browser):
   except:
     print ("\nBio is empty")
     bio = ""
+  try:
+    bio_url = container.find_element_by_class_name('yLUwa').text
+  except:
+    print ("\nBio Url is empty")
+    bio_url = ""
   print ("\nalias name: ", alias_name)
-  print ("\nbio: ", bio,"\n")
+  print ("\nbio: ", bio)
   print("\nurl: ", bio_url, "\n")
   prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
   num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
