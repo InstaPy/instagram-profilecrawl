@@ -12,6 +12,7 @@ import signal
 from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
+import errno
 
 
 def web_adress_navigator(browser, link):
@@ -29,3 +30,12 @@ def web_adress_navigator(browser, link):
         browser.get(link)
         # update server calls
         sleep(2)
+
+def check_folder(folder):
+    if not os.path.exists(folder):
+        try:
+            os.makedirs(folder)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+    return True
