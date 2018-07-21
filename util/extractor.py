@@ -6,6 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import requests
 from util.settings import Settings
+from .util import web_adress_navigator
 import datetime
 
 def get_user_info(browser):
@@ -254,7 +255,7 @@ def extract_posts(browser, num_of_posts_to_do):
     counter = counter + 1
 
     print("\nScrapping link: ", link)
-    browser.get(link)
+    web_adress_navigator(browser, link)
     try:
       caption, location_url, location_name, location_id, lat, lng, img, tags, likes, comments, date, user_commented_list, user_comments, mentions = extract_post_info(
         browser)
@@ -290,7 +291,8 @@ def extract_posts(browser, num_of_posts_to_do):
 def extract_information(browser, username, limit_amount):
   """Get all the information for the given username"""
 
-  browser.get('https://www.instagram.com/' + username)
+  user_link = "https://www.instagram.com/{}/".format(username)
+  web_adress_navigator(browser, user_link)
   num_of_posts_to_do = 999999
   try:
     alias_name, bio, prof_img, num_of_posts, followers, following, bio_url \
