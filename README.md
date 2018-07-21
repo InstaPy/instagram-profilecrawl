@@ -26,7 +26,7 @@ python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
 
 **Settings:**
-To limit the amount of posts to be analyzed, change variable limit_amount in crawl_profile.py. The value will be auto-changed to be upper multiplocation of 12. Default value is 12000.
+To limit the amount of posts to be analyzed, change variable limit_amount in crawl_profile.py. Default value is 12000.
 
 ### Run on Raspberry Pi
 To run the crawler on Raspberry Pi with Firefox, follow these steps:
