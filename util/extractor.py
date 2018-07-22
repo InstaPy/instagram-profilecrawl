@@ -226,7 +226,7 @@ def extract_posts(browser, num_of_posts_to_do):
                           for link_elem in elems] for elems in links_elems], [])
             for link in links:
                 if "/p/" in link:
-                    print("links ", len(links2),"/",num_of_posts_to_do)
+                    #print("links ", len(links2),"/",num_of_posts_to_do)
                     if (len(links2) < num_of_posts_to_do):
                         links2.append(link)
             links2 = list(set(links2))
