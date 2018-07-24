@@ -198,9 +198,11 @@ def extract_posts(browser, num_of_posts_to_do):
     """Get all posts from user"""
     links = []
     links2 = []
+    preview_imgs = {}
 
     # list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
     # list links2 contains all the links collected so far
+    # preview_imgs dictionary maps link in links2 to liknk's post's preview image src
     try:
         body_elem = browser.find_element_by_tag_name('body')
 
@@ -224,6 +226,15 @@ def extract_posts(browser, num_of_posts_to_do):
             links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
             links = sum([[link_elem.get_attribute('href')
                           for link_elem in elems] for elems in links_elems], [])
+            for elems in links_elems:
+                for link_elem in elems:
+                    href = link_elem.get_attribute('href')
+                    try:
+                        img = link_elem.find_element_by_tag_name('img')
+                    except NoSuchElementException:
+                        continue
+                    src = img.get_attribute('src')
+                    preview_imgs[href] = src
             for link in links:
                 if "/p/" in link:
                     print("links ", len(links2),"/",num_of_posts_to_do)
@@ -280,9 +291,11 @@ def extract_posts(browser, num_of_posts_to_do):
                 'caption': caption,
                 'location': location,
                 'img': img,
+                'preview_img': preview_imgs.get(link, None),
                 'date': date,
                 'tags': tags,
                 'likes': likes,
+                'url': link,
                 'comments': {
                     'count': comments,
                     'list': user_comments
