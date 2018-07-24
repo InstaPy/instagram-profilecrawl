@@ -283,6 +283,7 @@ def extract_posts(browser, num_of_posts_to_do):
                 'date': date,
                 'tags': tags,
                 'likes': likes,
+                'url': link,
                 'comments': {
                     'count': comments,
                     'list': user_comments
