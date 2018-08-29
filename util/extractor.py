@@ -12,33 +12,61 @@ import datetime
 
 def get_user_info(browser):
     """Get the basic user info from the profile screen"""
-
+    num_of_posts = 0
+    followers = 0
+    following = 0
+    prof_img = ""
+    bio = ""
+    bio_url = ""
+    alias_name = ""
     container = browser.find_element_by_class_name('v9tJq')
-    print("ok")
-    img_container = browser.find_element_by_class_name('RR-M-')
-    infos = container.find_elements_by_class_name('Y8-fY ')
-    alias_name = container.find_element_by_class_name('-vDIg') \
-        .find_element_by_tag_name('h1').text
+    isprivate = False
+
+    try:
+        infos = container.find_elements_by_class_name('Y8-fY ')
+        num_of_posts = extract_exact_info(infos[0])
+        followers = extract_exact_info(infos[1])
+        following = extract_exact_info(infos[2])
+    except:
+        print("\nERROR - Infos (Follower, Abo, Posts) is empty")
+        infos = ""
+
+    try:
+        alias_name = container.find_element_by_class_name('-vDIg').find_element_by_tag_name('h1').text
+    except:
+        print("INFO - alias is empty")
+
     try:
         bio = container.find_element_by_class_name('-vDIg') \
             .find_element_by_tag_name('span').text
     except:
-        print("\nBio is empty")
-        bio = ""
+        print("INFO - Bio is empty")
+
     try:
         bio_url = container.find_element_by_class_name('yLUwa').text
     except:
-        print("\nBio Url is empty")
-        bio_url = ""
-    print("\nalias name: ", alias_name)
-    print("\nbio: ", bio)
-    print("\nurl: ", bio_url, "\n")
-    prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
-    num_of_posts = extract_exact_info(infos[0])
-    followers = extract_exact_info(infos[1])
-    following = extract_exact_info(infos[2])
+        print("INFO -Bio Url is empty")
 
-    return alias_name, bio, prof_img, num_of_posts, followers, following, bio_url
+    try:
+        img_container = browser.find_element_by_class_name('RR-M-')
+        prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
+    except:
+        print("INFO - image is empty")
+
+    try:
+        if container.find_element_by_class_name('Nd_Rl'):
+            isprivate = True
+    except:
+        isprivate = False
+
+    print("alias name: ", alias_name)
+    print("bio: ", bio)
+    print("url: ", bio_url)
+    print("Posts: ", num_of_posts)
+    print("Follower: ", followers)
+    print("Following: ", following)
+    print("isPrivate: ", isprivate)
+    return alias_name, bio, prof_img, num_of_posts, followers, following, bio_url, isprivate
 
 
 def extract_exact_info(info):
@@ -62,21 +90,11 @@ def extract_post_info(browser):
 
     # Get caption
     caption = ''
-    caption_username = ''
-    # try:
-    username = post.find_element_by_class_name('e1e1d').text
-    # print ("username:",username)
+    username = ''
     try:
-        caption_username = post.find_elements_by_class_name('gElp9')[0].find_element_by_tag_name('a').text
+        username = post.find_element_by_class_name('e1e1d').text
     except:
         pass
-        # print ("caption username:",caption_username)
-    if username == caption_username:
-        caption = post.find_element_by_class_name('Xl2Pu').find_element_by_class_name('gElp9').find_element_by_tag_name(
-            'span').text
-        print("caption:", caption)
-    # except Exception as err:
-    #  print (err)
 
     # Get location details
     location_url = ''
@@ -146,6 +164,12 @@ def extract_post_info(browser):
             comment_list = post.find_element_by_tag_name('ul')
             comments = comment_list.find_elements_by_tag_name('li')
 
+            if len(comments) > 0:
+                user_commented = comments[0].find_element_by_tag_name('a').get_attribute("href").split('/')
+                if username == user_commented[3]:
+                    caption = comments[0].find_element_by_tag_name('span').text
+                    print("caption:", caption)
+
             if len(comments) > 1:
                 # load hidden comments
                 while (comments[1].text.lower() == 'load more comments' or comments[1].text.lower().startswith(
@@ -175,7 +199,7 @@ def extract_post_info(browser):
             tags = findall(r'#[A-Za-z0-9]*', tags)
             print(len(user_commented_list), " comments.")
     except:
-        pass
+        print("ERROR - getting comments")
 
     mentions = []
     mention_list = []
@@ -189,7 +213,7 @@ def extract_post_info(browser):
                     # print(user_mention[3])
                     mentions.append(user_mention[3])
         except:
-            pass
+            print("ERROR - getting mentions")
     return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(
         len(comments) - 1), date, user_commented_list, user_comments, mentions
 
@@ -202,7 +226,7 @@ def extract_posts(browser, num_of_posts_to_do):
 
     # list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
     # list links2 contains all the links collected so far
-    # preview_imgs dictionary maps link in links2 to liknk's post's preview image src
+    # preview_imgs dictionary maps link in links2 to link's post's preview image src
     try:
         body_elem = browser.find_element_by_tag_name('body')
 
@@ -237,7 +261,7 @@ def extract_posts(browser, num_of_posts_to_do):
                     preview_imgs[href] = src
             for link in links:
                 if "/p/" in link:
-                    print("links ", len(links2),"/",num_of_posts_to_do)
+                    # print("links ", len(links2),"/",num_of_posts_to_do)
                     if (len(links2) < num_of_posts_to_do):
                         links2.append(link)
             links2 = list(set(links2))
@@ -311,13 +335,12 @@ def extract_posts(browser, num_of_posts_to_do):
 
 def extract_information(browser, username, limit_amount):
     """Get all the information for the given username"""
-
+    isprivate = False
     user_link = "https://www.instagram.com/{}/".format(username)
     web_adress_navigator(browser, user_link)
     num_of_posts_to_do = 999999
     try:
-        alias_name, bio, prof_img, num_of_posts, followers, following, bio_url \
-            = get_user_info(browser)
+        alias_name, bio, prof_img, num_of_posts, followers, following, bio_url, isprivate = get_user_info(browser)
         if limit_amount < 1:
             limit_amount = 999999
         num_of_posts_to_do = min(limit_amount, num_of_posts)
@@ -328,11 +351,11 @@ def extract_information(browser, username, limit_amount):
 
     post_infos = []
     user_commented_total_list = []
-    if Settings.scrap_posts_infos is True:
+    if Settings.scrap_posts_infos is True and isprivate is False:
         try:
             post_infos, user_commented_total_list = extract_posts(browser, num_of_posts_to_do)
         except:
-            pass
+            print("\nError: Couldn't get user posts.")
 
     information = {
         'alias': alias_name,
@@ -343,6 +366,7 @@ def extract_information(browser, username, limit_amount):
         'followers': followers,
         'following': following,
         'bio_url': bio_url,
+        'isprivate': isprivate,
         'scrapped': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         'posts': post_infos
     }
