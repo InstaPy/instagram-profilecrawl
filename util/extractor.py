@@ -166,7 +166,7 @@ def extract_post_info(browser):
 
             if len(comments) > 0:
                 user_commented = comments[0].find_element_by_tag_name('a').get_attribute("href").split('/')
-                if username == user_commented:
+                if username == user_commented[3]:
                     caption = comments[0].find_element_by_tag_name('span').text
                     print("caption:", caption)
 
@@ -199,7 +199,7 @@ def extract_post_info(browser):
             tags = findall(r'#[A-Za-z0-9]*', tags)
             print(len(user_commented_list), " comments.")
     except:
-        pass
+        print("ERROR - getting comments")
 
     mentions = []
     mention_list = []
@@ -213,7 +213,7 @@ def extract_post_info(browser):
                     # print(user_mention[3])
                     mentions.append(user_mention[3])
         except:
-            pass
+            print("ERROR - getting mentions")
     return caption, location_url, location_name, location_id, lat, lng, img, tags, int(likes), int(
         len(comments) - 1), date, user_commented_list, user_comments, mentions
 
