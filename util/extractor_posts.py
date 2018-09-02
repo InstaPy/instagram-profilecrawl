@@ -180,13 +180,14 @@ def extract_post_comments(browser, post):
                         elif comments[1].find_element_by_tag_name('a'):
                             print("click a for loading more")
                             comments[1].find_element_by_tag_name('a').click()
+                        sleep(Settings.sleep_time_between_comment_loading)
                     except:
-                        print("error on clicking - next try")
+                        print("error on clicking - next try (tried: " + tried_catch_comments + ")comments:" + str(len(comments)) + ")")
                         tried_catch_comments = tried_catch_comments + 1
                         if tried_catch_comments > 10:
                             print("exit getting comments")
                             break
-                        sleep(1)
+                        sleep(Settings.sleep_time_between_comment_loading)
 
                     comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
