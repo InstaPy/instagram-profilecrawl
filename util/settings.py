@@ -13,3 +13,12 @@ class Settings:
     output_comments = False
     sleep_time_between_post_scroll = 1.5
     mentions = True
+
+    log_output_toconsole = True
+    log_output_tofile = True
+    log_file_per_run = False
+    log_location = os.path.join(BASE_DIR, 'logs')
+
+    #from Instpy
+    # Set a logger cache outside object to avoid re-instantiation issues
+    loggers = {}

@@ -9,7 +9,8 @@ from util.settings import Settings
 from .util import web_adress_navigator
 from util.extractor_posts import extract_post_info
 import datetime
-
+from util.instalogger import InstaLogger
+from util.exceptions import PageNotFound404,NoInstaProfilePageFound,NoInstaPostPageFound
 
 def get_user_info(browser):
     """Get the basic user info from the profile screen"""
@@ -29,30 +30,30 @@ def get_user_info(browser):
         followers = extract_exact_info(infos[1])
         following = extract_exact_info(infos[2])
     except:
-        print("\nERROR - Infos (Follower, Abo, Posts) is empty")
+        InstaLogger.logger().error("Infos (Follower, Abo, Posts) is empty")
         infos = ""
 
     try:
         alias_name = container.find_element_by_class_name('-vDIg').find_element_by_tag_name('h1').text
     except:
-        print("INFO - alias is empty")
+        InstaLogger.logger().info("alias is empty")
 
     try:
         bio = container.find_element_by_class_name('-vDIg') \
             .find_element_by_tag_name('span').text
     except:
-        print("INFO - Bio is empty")
+        InstaLogger.logger().info("Bio is empty")
 
     try:
         bio_url = container.find_element_by_class_name('yLUwa').text
     except:
-        print("INFO -Bio Url is empty")
+        InstaLogger.logger().info("Bio Url is empty")
 
     try:
         img_container = browser.find_element_by_class_name('RR-M-')
         prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
     except:
-        print("INFO - image is empty")
+        InstaLogger.logger().info("image is empty")
 
     try:
         if container.find_element_by_class_name('Nd_Rl'):
@@ -60,13 +61,13 @@ def get_user_info(browser):
     except:
         isprivate = False
 
-    print("alias name: ", alias_name)
-    print("bio: ", bio)
-    print("url: ", bio_url)
-    print("Posts: ", num_of_posts)
-    print("Follower: ", followers)
-    print("Following: ", following)
-    print("isPrivate: ", isprivate)
+    InstaLogger.logger().info("alias name: " + alias_name)
+    InstaLogger.logger().info("bio: " + bio)
+    InstaLogger.logger().info("url: " + bio_url)
+    InstaLogger.logger().info("Posts: " + str(num_of_posts))
+    InstaLogger.logger().info("Follower: " + str(followers))
+    InstaLogger.logger().info("Following: " + str(following))
+    InstaLogger.logger().info("isPrivate: " + str(isprivate))
     return alias_name, bio, prof_img, num_of_posts, followers, following, bio_url, isprivate
 
 
@@ -125,7 +126,6 @@ def extract_user_posts(browser, num_of_posts_to_do):
                     preview_imgs[href] = src
             for link in links:
                 if "/p/" in link:
-                    # print("links ", len(links2),"/",num_of_posts_to_do)
                     if (len(links2) < num_of_posts_to_do):
                         links2.append(link)
             links2 = list(set(links2))
@@ -141,14 +141,14 @@ def extract_user_posts(browser, num_of_posts_to_do):
             else:
                 breaking = 0
             if breaking > 3:
-                print("\nNot getting any more posts, ending scrolling.")
+                print("Not getting any more posts, ending scrolling")
                 sleep(2)
                 break
             previouslen = len(links2)
             ##
 
     except NoSuchElementException as err:
-        print('- Something went terribly wrong\n')
+        InstaLogger.logger().error('Something went terribly wrong')
 
     post_infos = []
 
@@ -190,18 +190,23 @@ def extract_user_posts(browser, num_of_posts_to_do):
             })
             user_commented_total_list = user_commented_total_list + user_commented_list
         except NoSuchElementException as err:
-            print('- Could not get information from post: ' + postlink)
-            print(err)
+            InstaLogger.logger().error("Could not get information from post: " + postlink)
+            InstaLogger.logger().error(err)
         except:
-            print('- Could not get information from post: ' + postlink)
+            InstaLogger.logger().error("Could not get information from post: " + postlink)
     return post_infos, user_commented_total_list
 
 
 def extract_information(browser, username, limit_amount):
+    InstaLogger.logger().info('Extracting information from ' + username)
     """Get all the information for the given username"""
     isprivate = False
-    user_link = "https://www.instagram.com/{}/".format(username)
-    web_adress_navigator(browser, user_link)
+    try:
+        user_link = "https://www.instagram.com/{}/".format(username)
+        web_adress_navigator(browser, user_link)
+    except PageNotFound404 as e:
+        raise NoInstaProfilePageFound(e)
+
     num_of_posts_to_do = 999999
     alias_name = ''
     bio = ''
@@ -216,7 +221,7 @@ def extract_information(browser, username, limit_amount):
             limit_amount = 999999
         num_of_posts_to_do = min(limit_amount, num_of_posts)
     except:
-        print("\nError: Couldn't get user profile.\nTerminating")
+        InstaLogger.logger().error("Couldn't get user profile. - Terminating")
         quit()
     prev_divs = browser.find_elements_by_class_name('_70iju')
 
@@ -226,7 +231,7 @@ def extract_information(browser, username, limit_amount):
         try:
             post_infos, user_commented_total_list = extract_user_posts(browser, num_of_posts_to_do)
         except:
-            print("\nError: Couldn't get user posts.")
+            InstaLogger.logger().error("Couldn't get user posts.")
 
     information = {
         'alias': alias_name,
@@ -242,7 +247,7 @@ def extract_information(browser, username, limit_amount):
         'posts': post_infos
     }
 
-    print("\nUser ", username, " has ", len(user_commented_total_list), " comments.")
+    InstaLogger.logger().info( "User " +  username + " has " + str(len(user_commented_total_list)) + " comments.")
 
     # sorts the list by frequencies, so users who comment the most are at the top
     import collections

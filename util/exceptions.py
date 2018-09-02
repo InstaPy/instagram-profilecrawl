@@ -1,4 +1,4 @@
-
+from util.instalogger import InstaLogger
 
 """
 Exceptions that may happen in all the webdriver code.
@@ -22,3 +22,15 @@ class WebDriverException(Exception):
             stacktrace = "\n".join(self.stacktrace)
             exception_msg += "Stacktrace:\n%s" % stacktrace
         return exception_msg
+
+class PageNotFound404(Exception):
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
+class NoInstaProfilePageFound(Exception):
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
+class NoInstaPostPageFound(Exception):
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
