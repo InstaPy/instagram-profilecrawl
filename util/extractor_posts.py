@@ -173,12 +173,17 @@ def extract_post_comments(browser, post):
                 # load hidden comments
                 while (comments[1].text.lower() == 'load more comments' or comments[1].text.lower().startswith(
                         'view all')):
-                    if comments[1].find_element_by_tag_name('button'):
-                        print("click buuton for loading more")
-                        comments[1].find_element_by_tag_name('button').click()
-                    elif comments[1].find_element_by_tag_name('a'):
-                        print("click a for loading more")
-                        comments[1].find_element_by_tag_name('a').click()
+                    try:
+                        if comments[1].find_element_by_tag_name('button'):
+                            print("click button for loading more")
+                            comments[1].find_element_by_tag_name('button').click()
+                        elif comments[1].find_element_by_tag_name('a'):
+                            print("click a for loading more")
+                            comments[1].find_element_by_tag_name('a').click()
+                    except:
+                        print("error on clicking - next try")
+                        sleep(1)
+
                     comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
                 # adding who commented into user_commented_list
