@@ -6,14 +6,15 @@ import datetime
 import os
 import re
 import random
-import sqlite3
 import time
 import signal
 from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
 import errno
+from util.exceptions import PageNotFound404
 from util.instalogger import InstaLogger
+import requests
 
 
 def web_adress_navigator(browser, link):
@@ -24,16 +25,30 @@ def web_adress_navigator(browser, link):
     except WebDriverException:
         try:
             current_url = browser.execute_script("return window.location.href")
-        except NoSuchElementException:
-            InstaLogger.logger().error("Failed to get page")
-            total_posts = None
         except WebDriverException:
             current_url = None
 
     if current_url is None or current_url != link:
-        browser.get(link)
+        response = browser.get(link)
+
+        if check_page_title_notfound(browser):
+            InstaLogger.logger().error("Failed to get page " + link)
+            raise PageNotFound404("Failed to get page " + link)
+        #if response.status_code == 404:
+        #    InstaLogger.logger().error("Failed to get page " + link)
+        #   raise PageNotFound404()
         # update server calls
         sleep(2)
+
+
+def check_page_title_notfound(browser):
+    """ little bit hacky but selenium doesn't shown if 404 is send"""
+    """ more infos https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/141 """
+
+    title = browser.title
+    if title.lower().startswith('page not found'):
+        return True
+    return False
 
 def check_folder(folder):
     if not os.path.exists(folder):

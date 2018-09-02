@@ -24,7 +24,12 @@ try:
 
   for username in usernames:
     print('Extracting information from ' + username)
-    information, user_commented_list = extract_information(browser, username)
+    information = []
+    user_commented_list = []
+    try:
+      information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
+    except:
+      print("Error with user " + username)
 
     with open(Settings.profile_location + '/' + username + '.json', 'w') as fp:
       json.dump(information, fp)

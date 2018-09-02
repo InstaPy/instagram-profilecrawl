@@ -29,7 +29,12 @@ try:
 
   for username in usernames:
     print('Extracting information from ' + username)
-    information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
+    information = []
+    user_commented_list = []
+    try:
+      information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
+    except:
+      print("Error with user " + username)
     Datasaver.save_profile_json(username,information)
                                                      
     print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")

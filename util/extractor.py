@@ -10,7 +10,7 @@ from .util import web_adress_navigator
 from util.extractor_posts import extract_post_info
 import datetime
 from util.instalogger import InstaLogger
-
+from util.exceptions import PageNotFound404,NoInstaProfilePageFound,NoInstaPostPageFound
 
 def get_user_info(browser):
     """Get the basic user info from the profile screen"""
@@ -201,8 +201,12 @@ def extract_information(browser, username, limit_amount):
     InstaLogger.logger().info('Extracting information from ' + username)
     """Get all the information for the given username"""
     isprivate = False
-    user_link = "https://www.instagram.com/{}/".format(username)
-    web_adress_navigator(browser, user_link)
+    try:
+        user_link = "https://www.instagram.com/{}/".format(username)
+        web_adress_navigator(browser, user_link)
+    except PageNotFound404 as e:
+        raise NoInstaProfilePageFound(e)
+
     num_of_posts_to_do = 999999
     alias_name = ''
     bio = ''

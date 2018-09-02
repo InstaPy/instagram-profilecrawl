@@ -9,6 +9,8 @@ from util.settings import Settings
 from .util import web_adress_navigator
 import datetime
 from util.instalogger import InstaLogger
+from util.exceptions import PageNotFound404,NoInstaProfilePageFound,NoInstaPostPageFound
+
 
 def extract_post_info(browser, postlink):
     """Get the information from the current post"""
@@ -16,6 +18,8 @@ def extract_post_info(browser, postlink):
     try:
         InstaLogger.logger().info("Scrapping Post Link: " + postlink)
         web_adress_navigator(browser, postlink)
+    except PageNotFound404 as e:
+        raise NoInstaPostPageFound(e)
     except NoSuchElementException as err:
         InstaLogger.logger().error("Could not get information from post: " + postlink)
         InstaLogger.logger().error(err)
