@@ -13,6 +13,7 @@ from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
 import errno
+from util.instalogger import InstaLogger
 
 
 def web_adress_navigator(browser, link):
@@ -23,6 +24,9 @@ def web_adress_navigator(browser, link):
     except WebDriverException:
         try:
             current_url = browser.execute_script("return window.location.href")
+        except NoSuchElementException:
+            InstaLogger.logger().error("Failed to get page")
+            total_posts = None
         except WebDriverException:
             current_url = None
 

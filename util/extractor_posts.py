@@ -8,17 +8,17 @@ import requests
 from util.settings import Settings
 from .util import web_adress_navigator
 import datetime
-
+from util.instalogger import InstaLogger
 
 def extract_post_info(browser, postlink):
     """Get the information from the current post"""
 
     try:
-        print("\nScrapping Post Link: ", postlink)
+        InstaLogger.logger().info("Scrapping Post Link: " + postlink)
         web_adress_navigator(browser, postlink)
     except NoSuchElementException as err:
-        print('- Could not get information from post: ' + postlink)
-        print(err)
+        InstaLogger.logger().error("Could not get information from post: " + postlink)
+        InstaLogger.logger().error(err)
         pass
 
     post = browser.find_element_by_class_name('ltEKP')
@@ -29,7 +29,7 @@ def extract_post_info(browser, postlink):
     try:
         username = post.find_element_by_class_name('e1e1d').text
     except:
-        print("ERROR - getting Post infos (username) ")
+        InstaLogger.logger().error("ERROR - getting Post infos (username) ")
 
     # Get location details
     location_url = ''
@@ -51,24 +51,23 @@ def extract_post_info(browser, postlink):
             data = response.json()
             lat = data['graphql']['location']['lat']
             lng = data['graphql']['location']['lng']
-        print("location_id:", location_id)
-        print("location_url:", location_url)
-        print("location_name:", location_name)
-        print("lat:", lat)
-        print("lng:", lng)
+        InstaLogger.logger().info("location_id:" + location_id)
+        InstaLogger.logger().info("location_url:" + location_url)
+        InstaLogger.logger().info("location_name:" + location_name)
+        InstaLogger.logger().info("lat:" + lat)
+        InstaLogger.logger().info("lng:" + lng)
     except:
-        print("ERROR - getting Location Infos  (perhaps not set)")
+        InstaLogger.logger().error("getting Location Infos  (perhaps not set)")
 
     try:
         date = post.find_element_by_xpath('//a/time').get_attribute("datetime")
-        print("date:", date)
+        InstaLogger.logger().info("date:" + str(date))
     except:
-        print("ERROR - getting Post Date ")
+        InstaLogger.logger().error("ERROR - getting Post Date ")
 
     imgs = post.find_elements_by_tag_name('img')
     img = ''
 
-    # print ("imgs:", imgs)
 
     if len(imgs) >= 2:
         img = imgs[1].get_attribute('src')
@@ -90,7 +89,7 @@ def extract_post_info(browser, postlink):
             likes = likes[0]
             likes = likes.replace(',', '').replace('.', '')
             likes = likes.replace('k', '00')
-    print("post-likes:", likes)
+        InstaLogger.logger().info("post-likes:" + likes)
 
     user_comments = []
     user_commented_list = []
@@ -102,7 +101,7 @@ def extract_post_info(browser, postlink):
     try:
         user_comments, user_commented_list, commentscount = extract_post_comments(browser, post)
     except:
-        print("Error comments")
+        InstaLogger.logger().error("trying to get comments (function)")
 
     try:
         caption, tags = extract_post_caption(user_comments, username)
@@ -110,12 +109,12 @@ def extract_post_info(browser, postlink):
         if len(caption) > 0:
             user_comments.pop(0)
     except:
-        print("Error caption/tags")
+        InstaLogger.logger().error("trying to get caption/tags (function)")
 
     try:
         mentions = extract_post_mentions(browser, post)
     except:
-        print("Error mentions")
+        InstaLogger.logger().error("trying to get mentions (function)")
 
     return caption, location_url, location_name, location_id, lat, lng, img, tags, int(
         likes), commentscount, date, user_commented_list, user_comments, mentions
@@ -129,11 +128,10 @@ def extract_post_mentions(browser, post):
                 mention_list = post.find_elements_by_class_name('xUdfV')  # perhaps JYWcJ
                 for mention in mention_list:
                     user_mention = mention.get_attribute("href").split('/')
-                    # print(user_mention[3])
                     mentions.append(user_mention[3])
-                print(len(mentions), "mentions")
+                InstaLogger.logger().info(str(len(mentions)) + "mentions")
         except:
-            print("ERROR - getting mentions")
+            InstaLogger.logger().error("getting mentions")
     return mentions
 
 
@@ -145,10 +143,10 @@ def extract_post_caption(user_comments, username):
             user_commented = user_comments[0]
             if username == user_commented['user']:
                 caption = user_commented['comment']
-                print("caption:", caption)
+                InstaLogger.logger().info( "caption:" + caption)
                 tags = findall(r'#[A-Za-z0-9]*', caption)
     except:
-        print("ERROR - getting caption")
+        InstaLogger.logger().error("getting caption")
     return caption, tags
 
 
@@ -180,7 +178,7 @@ def extract_post_comments(browser, post):
                     comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
                 # adding who commented into user_commented_list
-                print("found comments", len(comments))
+                InstaLogger.logger().info("found comments" + str(len(comments)))
             else:
                 print("1 comment")
 
@@ -189,8 +187,7 @@ def extract_post_comments(browser, post):
                     user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
                     user_commented_list.append(user_commented[3])
                 except:
-                    print("ERROR something went wrong getting user_commented")
-
+                    InstaLogger.logger().error("ERROR something went wrong getting user_commented")
                 #first comment has to be loaded everytime to get the caption and tag from post
                 if (Settings.output_comments is True or len(user_comments) < 1):
                     user_comment = {}
@@ -199,16 +196,15 @@ def extract_post_comments(browser, post):
                             'user': user_commented[3],
                             'comment': comm.find_element_by_tag_name('span').text
                         }
-                        print(user_commented[3] + " -- " + comm.find_element_by_tag_name('span').text)
-
+                        InstaLogger.logger().info(user_commented[3] + " -- " + comm.find_element_by_tag_name('span').text)
                         user_comments.append(user_comment)
                     except:
-                        print("ERROR something went wrong getting comment")
+                        InstaLogger.logger().error("ERROR something went wrong getting comment")
 
-        print(len(user_commented_list), " comments.")
+        InstaLogger.logger().info( str(len(user_commented_list)) + " comments.")
     except BaseException as e:
-        print(e)
+        InstaLogger.logger().error(e)
     except:
-        print("ERROR - getting comments")
+        InstaLogger.logger().error("getting comments")
 
     return user_comments, user_commented_list, int(len(comments)-1)
