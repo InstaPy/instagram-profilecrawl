@@ -9,7 +9,7 @@ from util.settings import Settings
 from .util import web_adress_navigator
 import datetime
 from util.instalogger import InstaLogger
-from util.exceptions import PageNotFound404,NoInstaProfilePageFound,NoInstaPostPageFound
+from util.exceptions import PageNotFound404, NoInstaProfilePageFound, NoInstaPostPageFound
 
 
 def extract_post_info(browser, postlink):
@@ -71,7 +71,6 @@ def extract_post_info(browser, postlink):
 
     imgs = post.find_elements_by_tag_name('img')
     img = ''
-
 
     if len(imgs) >= 2:
         img = imgs[1].get_attribute('src')
@@ -147,7 +146,7 @@ def extract_post_caption(user_comments, username):
             user_commented = user_comments[0]
             if username == user_commented['user']:
                 caption = user_commented['comment']
-                InstaLogger.logger().info( "caption:" + caption)
+                InstaLogger.logger().info("caption:" + caption)
                 tags = findall(r'#[A-Za-z0-9]*', caption)
     except:
         InstaLogger.logger().error("getting caption")
@@ -171,14 +170,24 @@ def extract_post_comments(browser, post):
 
             if len(comments) > 1:
                 # load hidden comments
+                tried_catch_comments = 0
                 while (comments[1].text.lower() == 'load more comments' or comments[1].text.lower().startswith(
                         'view all')):
-                    if comments[1].find_element_by_tag_name('button'):
-                        print("click buuton for loading more")
-                        comments[1].find_element_by_tag_name('button').click()
-                    elif comments[1].find_element_by_tag_name('a'):
-                        print("click a for loading more")
-                        comments[1].find_element_by_tag_name('a').click()
+                    try:
+                        if comments[1].find_element_by_tag_name('button'):
+                            print("click button for loading more")
+                            comments[1].find_element_by_tag_name('button').click()
+                        elif comments[1].find_element_by_tag_name('a'):
+                            print("click a for loading more")
+                            comments[1].find_element_by_tag_name('a').click()
+                    except:
+                        print("error on clicking - next try")
+                        tried_catch_comments = tried_catch_comments + 1
+                        if tried_catch_comments > 10:
+                            print("exit getting comments")
+                            break
+                        sleep(1)
+
                     comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
                 # adding who commented into user_commented_list
@@ -192,7 +201,7 @@ def extract_post_comments(browser, post):
                     user_commented_list.append(user_commented[3])
                 except:
                     InstaLogger.logger().error("ERROR something went wrong getting user_commented")
-                #first comment has to be loaded everytime to get the caption and tag from post
+                # first comment has to be loaded everytime to get the caption and tag from post
                 if (Settings.output_comments is True or len(user_comments) < 1):
                     user_comment = {}
                     try:
@@ -200,15 +209,16 @@ def extract_post_comments(browser, post):
                             'user': user_commented[3],
                             'comment': comm.find_element_by_tag_name('span').text
                         }
-                        InstaLogger.logger().info(user_commented[3] + " -- " + comm.find_element_by_tag_name('span').text)
+                        InstaLogger.logger().info(
+                            user_commented[3] + " -- " + comm.find_element_by_tag_name('span').text)
                         user_comments.append(user_comment)
                     except:
                         InstaLogger.logger().error("ERROR something went wrong getting comment")
 
-        InstaLogger.logger().info( str(len(user_commented_list)) + " comments.")
+        InstaLogger.logger().info(str(len(user_commented_list)) + " comments.")
     except BaseException as e:
         InstaLogger.logger().error(e)
     except:
         InstaLogger.logger().error("getting comments")
 
-    return user_comments, user_commented_list, int(len(comments)-1)
+    return user_comments, user_commented_list, int(len(comments) - 1)
