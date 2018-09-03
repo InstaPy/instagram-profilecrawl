@@ -182,7 +182,7 @@ def extract_post_comments(browser, post):
                             comments[1].find_element_by_tag_name('a').click()
                         sleep(Settings.sleep_time_between_comment_loading)
                     except:
-                        print("error on clicking - next try (tried: " + tried_catch_comments + ")comments:" + str(len(comments)) + ")")
+                        print("error on clicking - next try (tried: " + str(tried_catch_comments) + ")comments:" + str(len(comments)) + ")")
                         tried_catch_comments = tried_catch_comments + 1
                         if tried_catch_comments > 10:
                             print("exit getting comments")
