@@ -42,7 +42,7 @@ If you are interested in collecting and logging stats from a crawled profile, us
 For example, on Raspberry Pi run:
 
 1. Run `python3 crawl_profile_pi.py username`
-2. Run `python3 log_stats.py -u username`
+2. Run `python3 log_stats.py -u username` for specific user or `python3 log_stats.py` for all user
 
 This appends the collected profile info to `stats.csv`. Can be useful for monitoring the growth of an Instagram account over time.
 The logged stats are: Time, username, total number of followers, following, posts, likes, and comments.
