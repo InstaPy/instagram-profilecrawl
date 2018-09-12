@@ -48,6 +48,43 @@ This appends the collected profile info to `stats.csv`. Can be useful for monito
 The logged stats are: Time, username, total number of followers, following, posts, likes, and comments.
 The two commands can simply be triggered using `crontab` (make sure to trigger `log_stats.py` several minutes after `crawl_profile_pi.py`).
 
+**Settings:**
+
+Path to the save the profile jsons:
+```Settings.profile_location = os.path.join(BASE_DIR, 'profiles')```
+Should the profile json file should get a timestamp
+```Settings.profile_file_with_timestamp = True```
+
+Path to the save the commentors:
+```Settings.profile_commentors_location = os.path.join(BASE_DIR, 'profiles')```
+Should the commentors file should get a timestamp
+```Settings.profile_commentors_file_with_timestamp = True```
+
+Scrap & save the posts json
+```Settings.scrap_posts_infos = True```
+How many (max) post should be scraped
+```Settings.limit_amount = 12000```
+Should the comments also be saved in json files
+```Settings.output_comments = False```
+Should the mentions in the post image saved in json files
+```Settings.mentions = True```
+
+Time between post scrolling (increase if you got errors)
+```Settings.sleep_time_between_post_scroll = 1.5```
+Time between comment scrolling (increase if you got errors)
+```Settings.sleep_time_between_comment_loading = 1.5```
+
+Output debug messages to Console
+```Settings.log_output_toconsole = True```
+Path to the logfile
+```Settings.log_location = os.path.join(BASE_DIR, 'logs')```
+Output debug messages to File
+```Settings.log_output_tofile = True```
+New logfile for every run
+```Settings.log_file_per_run = False```
+
+
+
 #### The information will be saved in a JSON-File in ./profiles/{username}.json
 > Example of a files data
 ```
