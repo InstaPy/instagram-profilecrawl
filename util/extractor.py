@@ -104,26 +104,35 @@ def extract_user_posts(browser, num_of_posts_to_do):
 
         previouslen = 0
         breaking = 0
-
+       
+        print ("number of posts to do: ", num_of_posts_to_do)
         num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
         print("Getting first", num_of_posts_to_scroll,
               "posts but check ", num_of_posts_to_do,
               " posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
-        while (len(links2) < num_of_posts_to_do):
-            links2 = []
+        while (len(links2) < num_of_posts_to_do):   
+            
             prev_divs = browser.find_elements_by_tag_name('main')
             links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
             links = sum([[link_elem.get_attribute('href')
                           for link_elem in elems] for elems in links_elems], [])
+            
             for elems in links_elems:
                 for link_elem in elems:
+                    
                     href = link_elem.get_attribute('href')
                     try:
-                        img = link_elem.find_element_by_tag_name('img')
-                    except NoSuchElementException:
-                        continue
-                    src = img.get_attribute('src')
-                    preview_imgs[href] = src
+                        if "/p/" in href:
+                            try:
+                                img = link_elem.find_element_by_tag_name('img')
+                                src = img.get_attribute('src')
+                                preview_imgs[href] = src
+                            except NoSuchElementException:
+                                print ("img exception 132")
+                                continue       
+                    except Exception as err:
+                        print (err)
+                        
             for link in links:
                 if "/p/" in link:
                     if (len(links2) < num_of_posts_to_do):
@@ -177,11 +186,11 @@ def extract_user_posts(browser, num_of_posts_to_do):
                 'caption': caption,
                 'location': location,
                 'img': img,
-                'preview_img': preview_imgs.get(link, None),
+                'preview_img': preview_imgs.get(postlink, None),
                 'date': date,
                 'tags': tags,
                 'likes': likes,
-                'url': link,
+                'url': postlink,
                 'comments': {
                     'count': commentscount,
                     'list': user_comments
@@ -220,7 +229,7 @@ def extract_information(browser, username, limit_amount):
         if limit_amount < 1:
             limit_amount = 999999
         num_of_posts_to_do = min(limit_amount, num_of_posts)
-    except:
+    except Exception as err:
         InstaLogger.logger().error("Couldn't get user profile. - Terminating")
         quit()
     prev_divs = browser.find_elements_by_class_name('_70iju')
