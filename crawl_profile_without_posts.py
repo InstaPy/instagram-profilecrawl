@@ -18,7 +18,7 @@ chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--lang=en-US')
 chrome_options.add_argument('--headless')
 chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
-browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+browser = webdriver.Chrome('./assets/chromedriver', options=chrome_options)
 
 # makes sure slower connections work as well        
 print ("Waiting 10 sec")
