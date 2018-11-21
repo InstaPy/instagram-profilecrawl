@@ -16,6 +16,9 @@ from util.exceptions import PageNotFound404
 from util.instalogger import InstaLogger
 import requests
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+from selenium.webdriver.support import expected_conditions as EC
 
 def web_adress_navigator(browser, link):
     """Checks and compares current URL of web page and the URL to be navigated and if it is different, it does navigate"""
@@ -38,7 +41,10 @@ def web_adress_navigator(browser, link):
         #    InstaLogger.logger().error("Failed to get page " + link)
         #   raise PageNotFound404()
         # update server calls
-        sleep(2)
+
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "viewport")))
+
+        # sleep(2)
 
 
 def check_page_title_notfound(browser):

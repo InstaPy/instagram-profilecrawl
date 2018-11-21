@@ -12,9 +12,9 @@ Just do:
 git clone https://github.com/timgrossmann/instagram-profilecrawl.git
 ```
 
-It uses selenium to get all the information so install it with:
+It uses selenium and requests to get all the information so install them with:
 ```bash
-pip install selenium
+pip install -r requirements.txt
 ```
 
 Install the proper `chromedriver` for your operating system.  Once you (download it)[https://sites.google.com/a/chromium.org/chromedriver/downloads] just drag and drop it into `instagram-profilecrawl/assets` directory.

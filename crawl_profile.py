@@ -9,6 +9,8 @@ from util.datasaver import Datasaver
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+
+
 from util.cli_helper import get_all_user_names
 from util.extractor import extract_information
 
@@ -21,8 +23,8 @@ chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US
 browser = webdriver.Chrome('./assets/chromedriver', options=chrome_options)
 
 # makes sure slower connections work as well        
-print ("Waiting 10 sec")
-browser.implicitly_wait(10)
+# print("Waiting 10 sec")
+# browser.implicitly_wait(10)
 
 try:
   usernames = get_all_user_names()
