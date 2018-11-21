@@ -33,7 +33,7 @@ def web_adress_navigator(browser, link):
 
     if current_url is None or current_url != link:
         response = browser.get(link)
-
+ef
         if check_page_title_notfound(browser):
             InstaLogger.logger().error("Failed to get page " + link)
             raise PageNotFound404("Failed to get page " + link)
