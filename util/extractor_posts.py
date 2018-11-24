@@ -82,7 +82,6 @@ def extract_post_info(browser, postlink):
     if len(post.find_elements_by_tag_name('section')) > 2:
         likes = post.find_elements_by_tag_name('section')[1] \
             .find_element_by_tag_name('div').text
-
         likes = likes.split(' ')
 
         # count the names if there is no number displayed
@@ -94,6 +93,15 @@ def extract_post_info(browser, postlink):
             likes = likes.replace('k', '00')
         InstaLogger.logger().info("post-likes:" + likes)
 
+    #if likes is not known, it would cause errors to convert empty string to int
+
+    try:
+        likes = int(likes)
+    except Exception as err:
+        print ("Extracting number of likes failed. Saving likes as -1")
+        print (err)
+        likes = -1
+        
     user_comments = []
     user_commented_list = []
     mentions = []
