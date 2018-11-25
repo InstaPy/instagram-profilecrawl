@@ -16,7 +16,7 @@ from util.extractor import extract_information
 
 chrome_options = Options()
 chromeOptions = webdriver.ChromeOptions()
-prefs = {'profile.managed_default_content_settings.images':2}
+prefs = {'profile.managed_default_content_settings.images':2, 'disk-cache-size': 4096}
 chromeOptions.add_experimental_option("prefs", prefs)
 chrome_options.add_argument('--dns-prefetch-disable')
 chrome_options.add_argument('--no-sandbox')
