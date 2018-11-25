@@ -1,15 +1,26 @@
 """Util functions for the script"""
 import sys
 
+
 def get_all_user_names():
-  """Returns all the usernames given as parameter"""
-  usernames = []
+    """Returns all the usernames given as parameter"""
+    usernames = []
 
-  #display provide username
-  if len(sys.argv) < 2:
-    sys.exit('- Please provide at least one username!\n')
+    if len(sys.argv) < 2:
+        sys.exit('- You need to enter instagram_id username password in order to use program\n')
 
-  for username in sys.argv[1:]:
-    usernames.append(username)
+    usernames.append(sys.argv[1])
 
-  return usernames
+    return usernames
+
+def get_id_and_pass():
+    """get's the second & third arguments user enter and assign them to user & pass"""
+    id = []
+    password = []
+    try:
+        id.append(sys.argv[2])
+        password.append(sys.argv[3])
+    except:
+        sys.exit('- You need to provide username and password of your account for the program\n')
+
+    return id, password
