@@ -15,16 +15,16 @@ from util.cli_helper import get_all_user_names
 from util.extractor import extract_information
 
 chrome_options = Options()
+chromeOptions = webdriver.ChromeOptions()
+prefs = {'profile.managed_default_content_settings.images':2}
+chromeOptions.add_experimental_option("prefs", prefs)
 chrome_options.add_argument('--dns-prefetch-disable')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--lang=en-US')
 chrome_options.add_argument('--headless')
 chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
-browser = webdriver.Chrome('./assets/chromedriver', options=chrome_options)
+browser = webdriver.Chrome('./assets/chromedriver', options=chrome_options, chrome_options=chromeOptions)
 
-# makes sure slower connections work as well        
-# print("Waiting 10 sec")
-# browser.implicitly_wait(10)
 
 try:
   usernames = get_all_user_names()
@@ -35,10 +35,13 @@ try:
     user_commented_list = []
     try:
       information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
+
+
     except:
-      print("Error with user " + username)
+        print("Error with user " + username)
+
     Datasaver.save_profile_json(username,information)
-                                                     
+
     print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")
 
     Datasaver.save_profile_commenters_txt(username,user_commented_list)
