@@ -20,9 +20,9 @@ pip install -r requirements.txt
 Install the proper `chromedriver` for your operating system.  Once you (download it)[https://sites.google.com/a/chromium.org/chromedriver/downloads] just drag and drop it into `instagram-profilecrawl/assets` directory.
 
 ## Use it!
-Now you can start it using:
+Now you can start using it with entering 3 inputs with single space between them:
 ```bash
-python3.5 crawl_profile.py username1 username2 ... usernameX
+python3.5 crawl_profile.py id(the page you want to scrape) username password
 ```
 
 **Settings:**
