@@ -1,16 +1,23 @@
 """Methods to extract the data for the given usernames profile"""
+import sys
 from time import sleep
 from re import findall
 import math
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import requests
 from util.settings import Settings
 from .util import web_adress_navigator
 from util.extractor_posts import extract_post_info
 import datetime
 from util.instalogger import InstaLogger
-from util.exceptions import PageNotFound404,NoInstaProfilePageFound,NoInstaPostPageFound
+from util.exceptions import PageNotFound404,NoInstaProfilePageFound
+
 
 def get_user_info(browser):
     """Get the basic user info from the profile screen"""
@@ -24,8 +31,9 @@ def get_user_info(browser):
     container = browser.find_element_by_class_name('v9tJq')
     isprivate = False
 
+
     try:
-        infos = container.find_elements_by_class_name('Y8-fY ')
+        infos = container.find_elements_by_class_name('Y8-fY')
         num_of_posts = extract_exact_info(infos[0])
         followers = extract_exact_info(infos[1])
         following = extract_exact_info(infos[2])
@@ -206,6 +214,22 @@ def extract_user_posts(browser, num_of_posts_to_do):
     return post_infos, user_commented_total_list
 
 
+def login(browser, username_id, password):
+    login_url = 'https://www.instagram.com/accounts/login/?source=auth_switcher'
+    browser.get(login_url)
+    WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "HmktE")))
+    id_input = browser.find_element_by_xpath("//input[@name='username']")
+    id_input.send_keys(username_id)
+    pass_input = browser.find_element_by_xpath("//input[@name='password']")
+    pass_input.send_keys(password)
+    pass_input.send_keys(Keys.RETURN)
+    try:
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mt3GC")))
+    except Exception as e:
+        print(e, "username or password is wrong")
+        sys.exit(1)
+
+
 def extract_information(browser, username, limit_amount):
     InstaLogger.logger().info('Extracting information from ' + username)
     """Get all the information for the given username"""
@@ -215,6 +239,8 @@ def extract_information(browser, username, limit_amount):
         web_adress_navigator(browser, user_link)
     except PageNotFound404 as e:
         raise NoInstaProfilePageFound(e)
+
+
 
     num_of_posts_to_do = 999999
     alias_name = ''
@@ -253,7 +279,7 @@ def extract_information(browser, username, limit_amount):
         'bio_url': bio_url,
         'isprivate': isprivate,
         'scrapped': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        'posts': post_infos
+        'posts': post_infos,
     }
 
     InstaLogger.logger().info( "User " +  username + " has " + str(len(user_commented_total_list)) + " comments.")

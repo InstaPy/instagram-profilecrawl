@@ -8,7 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from util.cli_helper import get_all_user_names, get_id_and_pass
-from util.extractor import extract_information
+from util.extractor import extract_information, login
 
 chrome_options = Options()
 chromeOptions = webdriver.ChromeOptions()
@@ -23,15 +23,15 @@ browser = webdriver.Chrome('./assets/chromedriver', options=chrome_options, chro
 
 try:
     usernames = get_all_user_names()
-    id, password = get_id_and_pass()
+    username_id, password = get_id_and_pass()
 
     for username in usernames:
         print('Extracting information from ' + username)
         information = []
         user_commented_list = []
         try:
+            login_process = login(browser, username_id, password)
             information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
-
         except:
             print("Error with user " + username)
 

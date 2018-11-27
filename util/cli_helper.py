@@ -15,12 +15,12 @@ def get_all_user_names():
 
 def get_id_and_pass():
     """get's the second & third arguments user enter and assign them to user & pass"""
-    id = []
+    username_id = []
     password = []
     try:
-        id.append(sys.argv[2])
+        username_id.append(sys.argv[2])
         password.append(sys.argv[3])
     except:
         sys.exit('- You need to provide username and password of your account for the program\n')
 
-    return id, password
+    return username_id, password
