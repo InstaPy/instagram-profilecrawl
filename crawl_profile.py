@@ -1,13 +1,13 @@
 #!/usr/bin/env python3.5
-
 """Goes through all usernames and collects their information"""
+import sys
 from util.settings import Settings
 from util.datasaver import Datasaver
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from util.cli_helper import get_all_user_names, get_id_and_pass
+from util.cli_helper import get_all_user_names
 from util.extractor import extract_information, login
 
 chrome_options = Options()
@@ -22,18 +22,19 @@ chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US
 browser = webdriver.Chrome('./assets/chromedriver', options=chrome_options, chrome_options=chromeOptions)
 
 try:
-    usernames = get_all_user_names()
-    username_id, password = get_id_and_pass()
+    usernames, profile_user, user_password = get_all_user_names()
 
     for username in usernames:
         print('Extracting information from ' + username)
         information = []
         user_commented_list = []
         try:
-            login_process = login(browser, username_id, password)
+            if len(profile_user) != 0:
+                login_process = login(browser, profile_user, user_password)
             information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
         except:
             print("Error with user " + username)
+            sys.exit(1)
 
         Datasaver.save_profile_json(username,information)
 
