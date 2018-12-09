@@ -29,13 +29,14 @@ python3.5 crawl_profile.py username1 username2 ... usernameX
 **Settings:**
 To limit the amount of posts to be analyzed, change variable limit_amount in crawl_profile.py. Default value is 12000.\
 
-####new feature:
-**optional login:**\
-If you want to access more features(such as private accounts which you followed with yours will be accessible) you must enter your username and password in setting.py but remember its optional.\
-here are the steps to do so:
+### Optional login
+If you want to access **more features** (such as private accounts which you followed with yours will be accessible) you must enter your username and password in setting.py. Remember, it's optional.
+
+Here are the steps to do so:
 1. Open Settings.py
-2. At the button you must see `login_username` & `login_username`
+2. Search for `login_username` & `login_username`
 3. Put your information inside the quotation marks
+
 ### Run on Raspberry Pi
 To run the crawler on Raspberry Pi with Firefox, follow these steps:
 
