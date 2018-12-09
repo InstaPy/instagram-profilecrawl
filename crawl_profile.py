@@ -22,7 +22,9 @@ chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US
 browser = webdriver.Chrome('./assets/chromedriver', options=chrome_options, chrome_options=chromeOptions)
 
 try:
-    usernames, profile_user, user_password = get_all_user_names()
+    usernames = get_all_user_names()
+    profile_user = Settings.login_username
+    user_password = Settings.login_password
 
     for username in usernames:
         print('Extracting information from ' + username)
@@ -30,7 +32,7 @@ try:
         user_commented_list = []
         try:
             if len(profile_user) != 0:
-                login_process = login(browser, profile_user, user_password)
+                login(browser, profile_user, user_password)
             information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
         except:
             print("Error with user " + username)
