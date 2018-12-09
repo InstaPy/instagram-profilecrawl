@@ -21,7 +21,6 @@ Install the proper `chromedriver` for your operating system.  Once you (download
 
 ## Use it!
 Now you can start using it following this example:
-*keep in mind that entering username and password is optional*
 ```bash
 python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
