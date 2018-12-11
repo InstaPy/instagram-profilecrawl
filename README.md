@@ -36,6 +36,13 @@ Here are the steps to do so:
 2. Search for `login_username` & `login_username`
 3. Put your information inside the quotation marks
 
+Second option:
+just the settings to your script
+```python
+Settings.login_username = 'my_insta_account'
+Settings.user_password = 'my_passwort_xxx'
+```
+
 ### Run on Raspberry Pi
 To run the crawler on Raspberry Pi with Firefox, follow these steps:
 
