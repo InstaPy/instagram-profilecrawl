@@ -4,6 +4,11 @@
 """Goes through all usernames and collects their information"""
 import json
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.firefox.options import Options as Firefox_Options
 from pyvirtualdisplay import Display
 from util.cli_helper import get_all_user_names
 from util.extractor import extract_information
