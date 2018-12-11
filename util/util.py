@@ -17,7 +17,7 @@ from util.instalogger import InstaLogger
 import requests
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 def web_adress_navigator(browser, link):
@@ -44,7 +44,6 @@ def web_adress_navigator(browser, link):
 
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "viewport")))
 
-        # sleep(2)
 
 
 def check_page_title_notfound(browser):
