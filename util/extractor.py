@@ -213,23 +213,6 @@ def extract_user_posts(browser, num_of_posts_to_do):
             InstaLogger.logger().error("Could not get information from post: " + postlink)
     return post_infos, user_commented_total_list
 
-
-def login(browser, username_id, password):
-    login_url = 'https://www.instagram.com/accounts/login/?source=auth_switcher'
-    browser.get(login_url)
-    WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "HmktE")))
-    id_input = browser.find_element_by_xpath("//input[@name='username']")
-    id_input.send_keys(username_id)
-    pass_input = browser.find_element_by_xpath("//input[@name='password']")
-    pass_input.send_keys(password)
-    pass_input.send_keys(Keys.RETURN)
-    try:
-        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mt3GC")))
-    except Exception as e:
-        print(e, "username or password is wrong")
-        sys.exit(1)
-
-
 def extract_information(browser, username, limit_amount):
     InstaLogger.logger().info('Extracting information from ' + username)
     """Get all the information for the given username"""

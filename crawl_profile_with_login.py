@@ -8,7 +8,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from util.cli_helper import get_all_user_names
-from util.extractor import extract_information, login
+from util.extractor import extract_information
+from util.account import login
 
 chrome_options = Options()
 chromeOptions = webdriver.ChromeOptions()
