@@ -277,7 +277,7 @@ def extract_post_likers(browser, post, postlink, likes):
                 tried_catch_likers = tried_catch_likers + 1
                 sleep(Settings.sleep_time_between_post_scroll * 1.5)
 
-            if tried_catch_likers > 20:
+            if tried_catch_likers > 10:
                 print("exit scrolling likers")
                 break
 
