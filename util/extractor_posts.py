@@ -104,6 +104,7 @@ def extract_post_info(browser, postlink):
         
     user_comments = []
     user_commented_list = []
+    user_liked_list = []
     mentions = []
     tags = []
     caption = ''
@@ -127,22 +128,31 @@ def extract_post_info(browser, postlink):
     except:
         InstaLogger.logger().error("trying to get mentions (function)")
 
+
+    try:
+        user_liked_list = extract_post_likers(browser, post, postlink, likes)
+    except:
+        InstaLogger.logger().error("trying to get comments (function)")
+
+
     return caption, location_url, location_name, location_id, lat, lng, img, tags, int(
-        likes), commentscount, date, user_commented_list, user_comments, mentions
+        likes), commentscount, date, user_commented_list, user_comments, mentions, user_liked_list
 
 
 def extract_post_mentions(browser, post):
     mentions = []
-    if (Settings.mentions is True):
-        try:
-            if post.find_elements_by_class_name('xUdfV'):  # perhaps JYWcJ
-                mention_list = post.find_elements_by_class_name('xUdfV')  # perhaps JYWcJ
-                for mention in mention_list:
-                    user_mention = mention.get_attribute("href").split('/')
-                    mentions.append(user_mention[3])
-                InstaLogger.logger().info(str(len(mentions)) + "mentions")
-        except:
-            InstaLogger.logger().error("getting mentions")
+    if (Settings.mentions is False):
+        return mentions
+
+    try:
+        if post.find_elements_by_class_name('xUdfV'):  # perhaps JYWcJ
+            mention_list = post.find_elements_by_class_name('xUdfV')  # perhaps JYWcJ
+            for mention in mention_list:
+                user_mention = mention.get_attribute("href").split('/')
+                mentions.append(user_mention[3])
+            InstaLogger.logger().info(str(len(mentions)) + "mentions")
+    except:
+        InstaLogger.logger().error("getting mentions")
     return mentions
 
 
@@ -231,3 +241,56 @@ def extract_post_comments(browser, post):
         InstaLogger.logger().error("getting comments")
 
     return user_comments, user_commented_list, int(len(comments) - 1)
+
+def extract_post_likers(browser, post, postlink, likes):
+    InstaLogger.logger().info("GETTING LIKERS FROM POST")
+    user_liked_list = []
+    if (Settings.scrap_posts_likers is False):
+        return user_liked_list
+
+    postlink = postlink + "liked_by/"
+    try:
+
+        post.find_element_by_xpath("//a[@class='zV_Nj']").click()
+
+
+        likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
+
+        tried_catch_likers = 0
+        while len(likers_list) < likes:
+            likers_list_before = len(likers_list)
+            InstaLogger.logger().info(
+                "found likers: " + str(len(likers_list)) + " should be " + str(likes) + " -- scroll for more")
+            try:
+                div_likebox_elem = browser.find_element_by_xpath("//div[contains(@class, 'wwxN2')]")
+
+                browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", div_likebox_elem)
+
+            except:
+                print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
+                tried_catch_likers = tried_catch_likers + 1
+
+            sleep(Settings.sleep_time_between_post_scroll)
+            likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
+            if (likers_list_before is len(likers_list)):
+                print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
+                tried_catch_likers = tried_catch_likers + 1
+                sleep(Settings.sleep_time_between_post_scroll * 1.5)
+
+            if tried_catch_likers > 20:
+                print("exit scrolling likers")
+                break
+
+        likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
+
+        for liker in likers_list:
+            user_like = liker.get_attribute("href").split('/')
+            user_liked_list.append(user_like[3])
+
+        InstaLogger.logger().info(str(len(user_liked_list)) + "likes")
+
+    except BaseException as e:
+        InstaLogger.logger().error(e)
+    except:
+        InstaLogger.logger().error("getting post likers")
+    return user_liked_list

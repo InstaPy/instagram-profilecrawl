@@ -12,6 +12,7 @@ class Settings:
     profile_commentors_file_with_timestamp = True
     limit_amount = 12000
     scrap_posts_infos = True
+    scrap_posts_likers = False
     output_comments = False
     sleep_time_between_post_scroll = 1.5
     sleep_time_between_comment_loading = 1.5
