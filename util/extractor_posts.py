@@ -273,8 +273,8 @@ def extract_post_likers(browser, post, postlink, likes):
             sleep(Settings.sleep_time_between_post_scroll)
             likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
             if (likers_list_before is len(likers_list)):
-                print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
                 tried_catch_likers = tried_catch_likers + 1
+                print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
                 sleep(Settings.sleep_time_between_post_scroll * 1.5)
 
             if tried_catch_likers > 10:
