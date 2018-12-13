@@ -263,12 +263,12 @@ def extract_post_likers(browser, post, postlink, likes):
                 "found likers: " + str(len(likers_list)) + " should be " + str(likes) + " -- scroll for more")
             try:
                 div_likebox_elem = browser.find_element_by_xpath("//div[contains(@class, 'wwxN2')]")
-
                 browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", div_likebox_elem)
 
-            except:
-                print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
+            except BaseException as e:
                 tried_catch_likers = tried_catch_likers + 1
+                print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ") Message:" + e)
+
 
             sleep(Settings.sleep_time_between_post_scroll)
             likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
