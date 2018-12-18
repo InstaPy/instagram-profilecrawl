@@ -41,6 +41,8 @@ def extract_post_info(browser, postlink):
     location_id = 0
     lat = ''
     lng = ''
+    imgs = []
+    img = ''
 
     try:
         # Location url and name
@@ -55,53 +57,55 @@ def extract_post_info(browser, postlink):
             data = response.json()
             lat = data['graphql']['location']['lat']
             lng = data['graphql']['location']['lng']
-        InstaLogger.logger().info("location_id:" + location_id)
-        InstaLogger.logger().info("location_url:" + location_url)
-        InstaLogger.logger().info("location_name:" + location_name)
-        InstaLogger.logger().info("lat:" + lat)
-        InstaLogger.logger().info("lng:" + lng)
+        InstaLogger.logger().info("location_id: " + location_id)
+        InstaLogger.logger().info("location_url: " + location_url)
+        InstaLogger.logger().info("location_name: " + location_name)
+        InstaLogger.logger().info("lat: " + lat)
+        InstaLogger.logger().info("lng: " + lng)
     except:
         InstaLogger.logger().error("getting Location Infos  (perhaps not set)")
 
     try:
         date = post.find_element_by_xpath('//a/time').get_attribute("datetime")
-        InstaLogger.logger().info("date:" + str(date))
+        InstaLogger.logger().info("Post date: " + str(date))
     except:
         InstaLogger.logger().error("ERROR - getting Post Date ")
 
-    imgs = post.find_elements_by_tag_name('img')
-    img = ''
-
-    if len(imgs) >= 2:
-        img = imgs[1].get_attribute('src')
-    else:
-        img = imgs[0].get_attribute('src')
+    try:
+        imgs = post.find_elements_by_tag_name('img')
+        if len(imgs) >= 2:
+            img = imgs[1].get_attribute('src')
+        else:
+            img = imgs[0].get_attribute('src')
+        InstaLogger.logger().info("post image: " + img)
+    except:
+        InstaLogger.logger().error("ERROR - Post Image ")
 
     likes = 0
 
-    if len(post.find_elements_by_tag_name('section')) > 2:
-        likes = post.find_elements_by_tag_name('section')[1] \
-            .find_element_by_tag_name('div').text
-        likes = likes.split(' ')
-
-        # count the names if there is no number displayed
-        if len(likes) > 2:
-            likes = len([word for word in likes if word not in ['and', 'like', 'this']])
+    try:
+        #if len(post.find_elements_by_xpath('//article/div/section')) > 2:
+        likes_element = post.find_elements_by_xpath('//article/div/section[2]//span')
+        if len(likes_element) > 1:
+            likes = str(likes_element[1].text)
         else:
-            likes = likes[0]
-            likes = likes.replace(',', '').replace('.', '')
-            likes = likes.replace('k', '00')
-        InstaLogger.logger().info("post-likes:" + likes)
+            likes = str(likes_element[0].text)
 
-    #if likes is not known, it would cause errors to convert empty string to int
+        likes = likes.replace(',', '').replace('.', '')
+        likes = likes.replace('k', '00')
+        InstaLogger.logger().info("post likes: " + likes)
+    except Exception as err:
+        InstaLogger.logger().error("ERROR - Getting Post Likes")
+        InstaLogger.logger().error(err)
+    # if likes is not known, it would cause errors to convert empty string to int
 
     try:
         likes = int(likes)
     except Exception as err:
-        print ("Extracting number of likes failed. Saving likes as -1")
-        print (err)
+        InstaLogger.logger().error("ERROR - Extracting number of likes failed. Saving likes as -1")
+        InstaLogger.logger().error(err)
         likes = -1
-        
+
     user_comments = []
     user_commented_list = []
     user_liked_list = []
@@ -113,7 +117,7 @@ def extract_post_info(browser, postlink):
     try:
         user_comments, user_commented_list, commentscount = extract_post_comments(browser, post)
     except:
-        InstaLogger.logger().error("trying to get comments (function)")
+        InstaLogger.logger().error("ERROR - getting Post comments function trying")
 
     try:
         caption, tags = extract_post_caption(user_comments, username)
@@ -121,19 +125,17 @@ def extract_post_info(browser, postlink):
         if len(caption) > 0:
             user_comments.pop(0)
     except:
-        InstaLogger.logger().error("trying to get caption/tags (function)")
+        InstaLogger.logger().error("ERROR - getting Post caption/tags function")
 
     try:
         mentions = extract_post_mentions(browser, post)
     except:
-        InstaLogger.logger().error("trying to get mentions (function)")
-
+        InstaLogger.logger().error("ERROR - getting Post Mentions function")
 
     try:
         user_liked_list = extract_post_likers(browser, post, postlink, likes)
     except:
-        InstaLogger.logger().error("trying to get comments (function)")
-
+        InstaLogger.logger().error("ERROR - getting Post Likers function")
 
     return caption, location_url, location_name, location_id, lat, lng, img, tags, int(
         likes), commentscount, date, user_commented_list, user_comments, mentions, user_liked_list
@@ -150,9 +152,10 @@ def extract_post_mentions(browser, post):
             for mention in mention_list:
                 user_mention = mention.get_attribute("href").split('/')
                 mentions.append(user_mention[3])
-            InstaLogger.logger().info(str(len(mentions)) + "mentions")
-    except:
-        InstaLogger.logger().error("getting mentions")
+            InstaLogger.logger().info("mentions: " + str(len(mentions)))
+    except Exception as err:
+        InstaLogger.logger().error("Error - getting mentions")
+        InstaLogger.logger().error(err)
     return mentions
 
 
@@ -164,10 +167,11 @@ def extract_post_caption(user_comments, username):
             user_commented = user_comments[0]
             if username == user_commented['user']:
                 caption = user_commented['comment']
-                InstaLogger.logger().info("caption:" + caption)
+                InstaLogger.logger().info("caption: " + caption)
                 tags = findall(r'#[A-Za-z0-9]*', caption)
-    except:
-        InstaLogger.logger().error("getting caption")
+    except Exception as err:
+        InstaLogger.logger().error("Error - getting caption")
+        InstaLogger.logger().error(err)
     return caption, tags
 
 
@@ -200,7 +204,8 @@ def extract_post_comments(browser, post):
                             comments[1].find_element_by_tag_name('a').click()
                         sleep(Settings.sleep_time_between_comment_loading)
                     except:
-                        print("error on clicking - next try (tried: " + str(tried_catch_comments) + ")comments:" + str(len(comments)) + ")")
+                        print("error on clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
+                            len(comments)) + ")")
                         tried_catch_comments = tried_catch_comments + 1
                         if tried_catch_comments > 10:
                             print("exit getting comments")
@@ -210,9 +215,9 @@ def extract_post_comments(browser, post):
                     comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
                 # adding who commented into user_commented_list
-                InstaLogger.logger().info("found comments" + str(len(comments)))
+                InstaLogger.logger().info("found comments: " + str(len(comments)))
             else:
-                print("1 comment")
+                print("found comment: 1")
 
             for comm in comments:
                 try:
@@ -238,9 +243,10 @@ def extract_post_comments(browser, post):
     except BaseException as e:
         InstaLogger.logger().error(e)
     except:
-        InstaLogger.logger().error("getting comments")
+        InstaLogger.logger().error("Error - getting comments")
 
     return user_comments, user_commented_list, int(len(comments) - 1)
+
 
 def extract_post_likers(browser, post, postlink, likes):
     InstaLogger.logger().info("GETTING LIKERS FROM POST")
@@ -252,7 +258,6 @@ def extract_post_likers(browser, post, postlink, likes):
     try:
 
         post.find_element_by_xpath("//a[@class='zV_Nj']").click()
-
 
         likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
 
@@ -269,10 +274,9 @@ def extract_post_likers(browser, post, postlink, likes):
                 tried_catch_likers = tried_catch_likers + 1
                 print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ") Message:" + e)
 
-
             sleep(Settings.sleep_time_between_post_scroll)
             likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
-            if (likers_list_before is len(likers_list)):
+            if (likers_list_before == len(likers_list)):
                 tried_catch_likers = tried_catch_likers + 1
                 print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
                 sleep(Settings.sleep_time_between_post_scroll * 1.5)
@@ -287,10 +291,9 @@ def extract_post_likers(browser, post, postlink, likes):
             user_like = liker.get_attribute("href").split('/')
             user_liked_list.append(user_like[3])
 
-        InstaLogger.logger().info(str(len(user_liked_list)) + "likes")
+        InstaLogger.logger().info('likers: ' + str(len(user_liked_list)))
 
     except BaseException as e:
+        InstaLogger.logger().error("Error - getting post likers")
         InstaLogger.logger().error(e)
-    except:
-        InstaLogger.logger().error("getting post likers")
     return user_liked_list
