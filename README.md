@@ -99,6 +99,11 @@ Should the mentions in the post image saved in json files
 ```python
 Settings.mentions = True
 ```
+Should the users who liked the post saved in json files
+**Attention:** be aware it would take a lot of time. script just can load 12 like at once. before making a break and load again
+```python
+Settings.scrap_posts_likers = True
+```
 
 Time between post scrolling (increase if you got errors)
 ```python

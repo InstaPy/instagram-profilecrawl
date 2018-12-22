@@ -16,7 +16,7 @@ from .util import web_adress_navigator
 from util.extractor_posts import extract_post_info
 import datetime
 from util.instalogger import InstaLogger
-from util.exceptions import PageNotFound404,NoInstaProfilePageFound
+from util.exceptions import PageNotFound404, NoInstaProfilePageFound
 
 
 def get_user_info(browser):
@@ -30,7 +30,6 @@ def get_user_info(browser):
     alias_name = ""
     container = browser.find_element_by_class_name('v9tJq')
     isprivate = False
-
 
     try:
         infos = container.find_elements_by_class_name('Y8-fY')
@@ -112,22 +111,22 @@ def extract_user_posts(browser, num_of_posts_to_do):
 
         previouslen = 0
         breaking = 0
-       
-        print ("number of posts to do: ", num_of_posts_to_do)
+
+        print("number of posts to do: ", num_of_posts_to_do)
         num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
         print("Getting first", num_of_posts_to_scroll,
               "posts but check ", num_of_posts_to_do,
               " posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
-        while (len(links2) < num_of_posts_to_do):   
-            
+        while (len(links2) < num_of_posts_to_do):
+
             prev_divs = browser.find_elements_by_tag_name('main')
             links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
             links = sum([[link_elem.get_attribute('href')
                           for link_elem in elems] for elems in links_elems], [])
-            
+
             for elems in links_elems:
                 for link_elem in elems:
-                    
+
                     href = link_elem.get_attribute('href')
                     try:
                         if "/p/" in href:
@@ -136,11 +135,11 @@ def extract_user_posts(browser, num_of_posts_to_do):
                                 src = img.get_attribute('src')
                                 preview_imgs[href] = src
                             except NoSuchElementException:
-                                print ("img exception 132")
-                                continue       
+                                print("img exception 132")
+                                continue
                     except Exception as err:
-                        print (err)
-                        
+                        print(err)
+
             for link in links:
                 if "/p/" in link:
                     if (len(links2) < num_of_posts_to_do):
@@ -179,7 +178,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
         counter = counter + 1
 
         try:
-            caption, location_url, location_name, location_id, lat, lng, img, tags, likes, commentscount, date, user_commented_list, user_comments, mentions = extract_post_info(
+            caption, location_url, location_name, location_id, lat, lng, img, tags, likes, commentscount, date, user_commented_list, user_comments, mentions,user_liked_post = extract_post_info(
                 browser, postlink)
 
             location = {
@@ -197,7 +196,10 @@ def extract_user_posts(browser, num_of_posts_to_do):
                 'preview_img': preview_imgs.get(postlink, None),
                 'date': date,
                 'tags': tags,
-                'likes': likes,
+                'likes': {
+                    'count': likes,
+                    'list': user_liked_post
+                },
                 'url': postlink,
                 'comments': {
                     'count': commentscount,
@@ -213,6 +215,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
             InstaLogger.logger().error("Could not get information from post: " + postlink)
     return post_infos, user_commented_total_list
 
+
 def extract_information(browser, username, limit_amount):
     InstaLogger.logger().info('Extracting information from ' + username)
     """Get all the information for the given username"""
@@ -222,8 +225,6 @@ def extract_information(browser, username, limit_amount):
         web_adress_navigator(browser, user_link)
     except PageNotFound404 as e:
         raise NoInstaProfilePageFound(e)
-
-
 
     num_of_posts_to_do = 999999
     alias_name = ''
@@ -265,7 +266,7 @@ def extract_information(browser, username, limit_amount):
         'posts': post_infos,
     }
 
-    InstaLogger.logger().info( "User " +  username + " has " + str(len(user_commented_total_list)) + " comments.")
+    InstaLogger.logger().info("User " + username + " has " + str(len(user_commented_total_list)) + " comments.")
 
     # sorts the list by frequencies, so users who comment the most are at the top
     import collections
