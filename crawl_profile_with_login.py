@@ -37,7 +37,7 @@ except Exception as exc:
     sys.exit()
 
 Settings.login_username = 'my_insta_account'
-Settings.user_password = 'my_passwort_xxx'
+Settings.login_password = 'my_passwort_xxx'
 
 try:
     usernames = get_all_user_names()

@@ -40,7 +40,7 @@ Second option:
 just the settings to your script
 ```python
 Settings.login_username = 'my_insta_account'
-Settings.user_password = 'my_passwort_xxx'
+Settings.login_password = 'my_passwort_xxx'
 ```
 
 ### Run on Raspberry Pi
