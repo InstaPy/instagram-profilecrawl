@@ -26,7 +26,7 @@ python3.5 crawl_profile.py username1 username2 ... usernameX
 ```
 
 **Settings:**
-To limit the amount of posts to be analyzed, change variable limit_amount in crawl_profile.py. Default value is 12000.\
+To limit the amount of posts to be analyzed, change variable limit_amount in settings.py. Default value is 12000.
 
 ### Optional login
 If you want to access **more features** (such as private accounts which you followed with yours will be accessible) you must enter your username and password in setting.py. Remember, it's optional.
