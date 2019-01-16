@@ -33,14 +33,14 @@ If you want to access **more features** (such as private accounts which you foll
 
 Here are the steps to do so:
 1. Open Settings.py
-2. Search for `login_username` & `login_username`
+2. Search for `login_username` & `login_password`
 3. Put your information inside the quotation marks
 
 Second option:
 just the settings to your script
 ```python
 Settings.login_username = 'my_insta_account'
-Settings.login_password = 'my_passwort_xxx'
+Settings.login_password = 'my_password_xxx'
 ```
 
 ### Run on Raspberry Pi
