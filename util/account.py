@@ -35,5 +35,8 @@ def login(browser, login_username, login_password):
     try:
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mt3GC")))
     except Exception as e:
-        print(e, "username or password is wrong")
+        if EC.presence_of_element_located((By.CLASS_NAME, "AjK3K ")):
+            print("Verification Code required")
+        else:
+            print(e, "username or password is wrong")
         sys.exit(1)
