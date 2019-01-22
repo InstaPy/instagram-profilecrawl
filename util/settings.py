@@ -13,6 +13,7 @@ class Settings:
     limit_amount = 12000
     scrap_posts_infos = True
     scrap_posts_likers = False
+    scrap_follower = False
     output_comments = False
     sleep_time_between_post_scroll = 1.5
     sleep_time_between_comment_loading = 1.5
