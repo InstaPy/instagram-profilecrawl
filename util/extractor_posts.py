@@ -85,7 +85,7 @@ def extract_post_info(browser, postlink):
 
     try:
         #if len(post.find_elements_by_xpath('//article/div/section')) > 2:
-        likes_element = post.find_elements_by_xpath('//article/div[2]/section[2]/div/div[2]/a[2]/span')
+        likes_element = post.find_elements_by_xpath('//article/div[2]/section[2]/div/div/a/span')
         if len(likes_element) > 1:
             likes = str(likes_element[1].text)
         else:
