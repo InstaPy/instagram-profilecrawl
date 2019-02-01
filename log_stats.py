@@ -30,7 +30,7 @@ def write_stats(profile):
     likes = 0
     comments = 0
     for post in profile['posts']:
-        likes += post['likes']
+        likes += post['likes']['count']
         comments += post['comments']['count']
 
     # append collected stats to stats.csv
