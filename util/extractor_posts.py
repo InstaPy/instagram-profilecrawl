@@ -41,8 +41,11 @@ def extract_post_info(browser, postlink):
     location_id = 0
     lat = ''
     lng = ''
+
+    img_tags = []
     imgs = []
-    img = ''
+    imgdesc = []
+    views = 0
 
     try:
         # Location url and name
@@ -72,24 +75,33 @@ def extract_post_info(browser, postlink):
         InstaLogger.logger().error("ERROR - getting Post Date ")
 
     try:
-        imgs = post.find_elements_by_tag_name('img')
-        if len(imgs) >= 2:
-            img = imgs[1].get_attribute('src')
-        else:
-            img = imgs[0].get_attribute('src')
-        InstaLogger.logger().info("post image: " + img)
+        img_tags = post.find_elements_by_class_name('FFVAD')
+        InstaLogger.logger().info("number of images: " + str(len(img_tags)))
+        for i in img_tags:
+            imgs.append(i.get_attribute('src'))
+            imgdesc.append(i.get_attribute('alt'))
+            InstaLogger.logger().info("post image: " + imgs[-1])
+            InstaLogger.logger().info("alt text: " + imgdesc[-1])
     except:
-        InstaLogger.logger().error("ERROR - Post Image ")
+        InstaLogger.logger().error("ERROR - Post Image")
 
     likes = 0
 
     try:
         #if len(post.find_elements_by_xpath('//article/div/section')) > 2:
-        likes_element = post.find_elements_by_xpath('//article/div[2]/section[2]/div/div/a/span')
-        if len(likes_element) > 1:
-            likes = str(likes_element[1].text)
+        # image or video post?
+        if len(img_tags) >= 1:
+            likes = post.find_element_by_xpath('//article/div[2]/section[2]/div/div/a/span').text
         else:
-            likes = str(likes_element[0].text)
+            try:
+                views = int(post.find_element_by_xpath('//article/div[2]/section[2]/div/span/span').text.replace(",", ""))
+                InstaLogger.logger().info("video views: " + str(views))
+            except:
+                InstaLogger.logger().error("ERROR - Getting Video Views")
+            #click the view count to get the likes popup
+            viewcount_click = post.find_element_by_xpath('//article/div[2]/section[2]/div/span')
+            browser.execute_script("arguments[0].click();", viewcount_click)
+            likes = post.find_element_by_xpath('//article/div[2]/section[2]/div/div/div[4]/span').text
 
         likes = likes.replace(',', '').replace('.', '')
         likes = likes.replace('k', '00')
@@ -137,8 +149,8 @@ def extract_post_info(browser, postlink):
     except:
         InstaLogger.logger().error("ERROR - getting Post Likers function")
 
-    return caption, location_url, location_name, location_id, lat, lng, img, tags, int(
-        likes), commentscount, date, user_commented_list, user_comments, mentions, user_liked_list
+    return caption, location_url, location_name, location_id, lat, lng, imgs, imgdesc, tags, int(
+        likes), commentscount, date, user_commented_list, user_comments, mentions, user_liked_list, views
 
 
 def extract_post_mentions(browser, post):
@@ -168,7 +180,7 @@ def extract_post_caption(user_comments, username):
             if username == user_commented['user']:
                 caption = user_commented['comment']
                 InstaLogger.logger().info("caption: " + caption)
-                tags = findall(r'#[A-Za-z0-9]*', caption)
+                tags = findall(r'#[A-Za-z0-9äöüß]*', caption)
     except Exception as err:
         InstaLogger.logger().error("Error - getting caption")
         InstaLogger.logger().error(err)

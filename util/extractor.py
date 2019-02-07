@@ -298,7 +298,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
         counter = counter + 1
 
         try:
-            caption, location_url, location_name, location_id, lat, lng, img, tags, likes, commentscount, date, user_commented_list, user_comments, mentions, user_liked_post = extract_post_info(
+            caption, location_url, location_name, location_id, lat, lng, imgs, imgdesc, tags, likes, commentscount, date, user_commented_list, user_comments, mentions, user_liked_post, views = extract_post_info(
                 browser, postlink)
 
             location = {
@@ -312,7 +312,8 @@ def extract_user_posts(browser, num_of_posts_to_do):
             post_infos.append({
                 'caption': caption,
                 'location': location,
-                'img': img,
+                'imgs': imgs,
+                'imgdesc': imgdesc,
                 'preview_img': preview_imgs.get(postlink, None),
                 'date': date,
                 'tags': tags,
@@ -320,6 +321,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
                     'count': likes,
                     'list': user_liked_post
                 },
+                'views': views,
                 'url': postlink,
                 'comments': {
                     'count': commentscount,
