@@ -210,10 +210,10 @@ def extract_post_comments(browser, post):
                     try:
                         if comments[1].find_element_by_tag_name('button'):
                             print("clicking button for loading more")
-                            comments[1].find_element_by_tag_name('button').click()
+                            browser.execute_script("arguments[0].click();", comments[1].find_element_by_tag_name('button'))
                         elif comments[1].find_element_by_tag_name('a'):
                             print("clicking a for loading more")
-                            comments[1].find_element_by_tag_name('a').click()
+                            browser.execute_script("arguments[0].click();", comments[1].find_element_by_tag_name('a'))
                         sleep(Settings.sleep_time_between_comment_loading)
                     except:
                         print("error clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
