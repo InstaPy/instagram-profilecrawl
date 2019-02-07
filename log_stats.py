@@ -21,7 +21,7 @@ def move_file_to_done(profile_filename):
 
 
 def write_stats(profile):
-    timestamp = profile['scrapped']
+    timestamp = profile['scraped']
     username = profile['username']
     print('Reading crawled profile info of {}'.format(username))
     print(profile)

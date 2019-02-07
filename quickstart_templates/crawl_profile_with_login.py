@@ -55,7 +55,7 @@ try:
 
         Datasaver.save_profile_json(username,information)
 
-        print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")
+        print ("Number of users who commented on their profile is ", len(user_commented_list),"\n")
 
         Datasaver.save_profile_commenters_txt(username,user_commented_list)
         print ("\nFinished. The json file and nicknames of users who commented were saved in profiles directory.\n")

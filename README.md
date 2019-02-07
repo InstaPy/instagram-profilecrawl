@@ -83,9 +83,9 @@ Should the commentors file should get a timestamp
 Settings.profile_commentors_file_with_timestamp = True
 ```
 
-Scrap & save the posts json
+Scrape & save the posts json
 ```python
-Settings.scrap_posts_infos = True
+Settings.scrape_posts_infos = True
 ```
 How many (max) post should be scraped
 ```python
@@ -102,7 +102,7 @@ Settings.mentions = True
 Should the users who liked the post saved in json files
 **Attention:** be aware it would take a lot of time. script just can load 12 like at once. before making a break and load again
 ```python
-Settings.scrap_posts_likers = True
+Settings.scrape_posts_likers = True
 ```
 
 Time between post scrolling (increase if you got errors)

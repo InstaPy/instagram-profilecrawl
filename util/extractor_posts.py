@@ -16,7 +16,7 @@ def extract_post_info(browser, postlink):
     """Get the information from the current post"""
 
     try:
-        InstaLogger.logger().info("Scrapping Post Link: " + postlink)
+        InstaLogger.logger().info("Scraping Post Link: " + postlink)
         web_adress_navigator(browser, postlink)
     except PageNotFound404 as e:
         raise NoInstaPostPageFound(e)
@@ -197,14 +197,14 @@ def extract_post_comments(browser, post):
                         'view all')):
                     try:
                         if comments[1].find_element_by_tag_name('button'):
-                            print("click button for loading more")
+                            print("clicking button for loading more")
                             comments[1].find_element_by_tag_name('button').click()
                         elif comments[1].find_element_by_tag_name('a'):
-                            print("click a for loading more")
+                            print("clicking a for loading more")
                             comments[1].find_element_by_tag_name('a').click()
                         sleep(Settings.sleep_time_between_comment_loading)
                     except:
-                        print("error on clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
+                        print("error clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
                             len(comments)) + ")")
                         tried_catch_comments = tried_catch_comments + 1
                         if tried_catch_comments > 10:
@@ -214,18 +214,18 @@ def extract_post_comments(browser, post):
 
                     comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
-                # adding who commented into user_commented_list
                 InstaLogger.logger().info("found comments: " + str(len(comments)))
             else:
                 print("found comment: 1")
 
+            # adding who commented into user_commented_list
             for comm in comments:
                 try:
                     user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
                     user_commented_list.append(user_commented[3])
                 except:
                     InstaLogger.logger().error("ERROR something went wrong getting user_commented")
-                # first comment has to be loaded everytime to get the caption and tag from post
+                # first comment has to be loaded every time to get the caption and tag from post
                 if (Settings.output_comments is True or len(user_comments) < 1):
                     user_comment = {}
                     try:
@@ -249,10 +249,11 @@ def extract_post_comments(browser, post):
 
 
 def extract_post_likers(browser, post, postlink, likes):
-    InstaLogger.logger().info("GETTING LIKERS FROM POST")
     user_liked_list = []
-    if (Settings.scrap_posts_likers is False):
+    if (Settings.scrape_posts_likers is False):
         return user_liked_list
+    else:
+        InstaLogger.logger().info("GETTING LIKERS FROM POST")
 
     postlink = postlink + "liked_by/"
     try:

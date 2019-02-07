@@ -39,7 +39,7 @@ try:
     with open(Settings.profile_location + '/' + username + '.json', 'w') as fp:
       json.dump(information, fp)
 
-    print ("Number of users who commented on his/her profile is ", len(user_commented_list),"\n")
+    print ("Number of users who commented on their profile is ", len(user_commented_list),"\n")
     file = open(Settings.profile_commentors_location + '/' + username + "_commenters.txt","w")
     for line in user_commented_list:
       file.write(line)

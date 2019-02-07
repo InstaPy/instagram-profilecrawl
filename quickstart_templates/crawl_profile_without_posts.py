@@ -43,7 +43,7 @@ print ("Waiting 10 sec")
 browser.implicitly_wait(5)
 
 Settings.limit_amount = 1
-Settings.scrap_posts_infos = False
+Settings.scrape_posts_infos = False
 try:
   usernames = get_all_user_names()
 
