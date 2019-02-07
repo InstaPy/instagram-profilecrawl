@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import time
 from .settings import Settings
 
@@ -29,6 +30,7 @@ class InstaLogger:
         return file
 
     def get_logger(self, show_logs):
+        sys.stdout.reconfigure(encoding='utf-8')
         existing_logger = Settings.loggers.get(__name__)
         if existing_logger is not None:
             #print('logger already exists')
@@ -41,7 +43,7 @@ class InstaLogger:
             logger.setLevel(logging.DEBUG)
 
             logfile = self.set_logfile(self)
-            file_handler = logging.FileHandler(logfile)
+            file_handler = logging.FileHandler(logfile, encoding = 'UTF-8')
 
             file_handler.setLevel(logging.DEBUG)
             logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
