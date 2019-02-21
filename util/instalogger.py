@@ -30,7 +30,8 @@ class InstaLogger:
         return file
 
     def get_logger(self, show_logs):
-        sys.stdout.reconfigure(encoding='utf-8')
+        if sys.version_info >= (3, 7):
+            sys.stdout.reconfigure(encoding='utf-8')
         existing_logger = Settings.loggers.get(__name__)
         if existing_logger is not None:
             #print('logger already exists')
