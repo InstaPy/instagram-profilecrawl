@@ -159,8 +159,8 @@ def extract_post_mentions(browser, post):
         return mentions
 
     try:
-        if post.find_elements_by_class_name('xUdfV'):  # perhaps JYWcJ
-            mention_list = post.find_elements_by_class_name('xUdfV')  # perhaps JYWcJ
+        if post.find_elements_by_class_name('JYWcJ'):  # perhaps JYWcJ
+            mention_list = post.find_elements_by_class_name('JYWcJ')  # perhaps JYWcJ
             for mention in mention_list:
                 user_mention = mention.get_attribute("href").split('/')
                 mentions.append(user_mention[3])
