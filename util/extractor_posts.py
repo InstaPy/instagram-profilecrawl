@@ -66,7 +66,7 @@ def extract_post_info(browser, postlink):
         InstaLogger.logger().info("lat: " + lat)
         InstaLogger.logger().info("lng: " + lng)
     except:
-        InstaLogger.logger().error("getting Location Infos  (perhaps not set)")
+        InstaLogger.logger().warning("getting Location Infos (perhaps not set)")
 
     try:
         date = post.find_element_by_xpath('//a/time').get_attribute("datetime")
@@ -194,6 +194,9 @@ def extract_post_comments(browser, post):
     # first element is the text, second either the first comment
     # or the button to display all the comments
 
+    # sometimes getting comments ends in a endless loop
+    # therefore reduce the run
+    clicks_on_button = 0
     comments = []
     user_commented_list = []
     user_comments = []
@@ -209,12 +212,17 @@ def extract_post_comments(browser, post):
                         'view all')):
                     try:
                         if comments[1].find_element_by_tag_name('button'):
-                            print("clicking button for loading more")
+                            print("clicking button for loading more comments")
                             browser.execute_script("arguments[0].click();", comments[1].find_element_by_tag_name('button'))
+                            clicks_on_button = clicks_on_button + 1
                         elif comments[1].find_element_by_tag_name('a'):
                             print("clicking a for loading more")
                             browser.execute_script("arguments[0].click();", comments[1].find_element_by_tag_name('a'))
+                            clicks_on_button = clicks_on_button + 1
                         sleep(Settings.sleep_time_between_comment_loading)
+                        if (clicks_on_button >= Settings.max_buttonclicks_viewmorecomments):
+                            InstaLogger.logger().warning("Clicked Button: " + str(clicks_on_button) + " to view more comments - perhaps there are some more perhaps there is a endless loop")
+                            break
                     except:
                         print("error clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
                             len(comments)) + ")")
