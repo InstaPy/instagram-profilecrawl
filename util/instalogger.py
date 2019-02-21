@@ -30,20 +30,21 @@ class InstaLogger:
         return file
 
     def get_logger(self, show_logs):
-        sys.stdout.reconfigure(encoding='utf-8')
+        if sys.version_info >= (3, 7):
+            sys.stdout.reconfigure(encoding='utf-8')
         existing_logger = Settings.loggers.get(__name__)
         if existing_logger is not None:
-            #print('logger already exists')
+            # print('logger already exists')
             return existing_logger
         else:
-            #print('logger catch new one')
+            # print('logger catch new one')
             self.set_logfolder(self)
             # initialize and setup logging system
             logger = logging.getLogger(__name__)
             logger.setLevel(logging.DEBUG)
 
             logfile = self.set_logfile(self)
-            file_handler = logging.FileHandler(logfile, encoding = 'UTF-8')
+            file_handler = logging.FileHandler(logfile, encoding='UTF-8')
 
             file_handler.setLevel(logging.DEBUG)
             logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
