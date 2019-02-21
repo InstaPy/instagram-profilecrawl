@@ -130,7 +130,7 @@ def extract_exact_info(info):
 
 
 def extract_followers(browser, username):
-    InstaLogger.logger().info('Extracting information from ' + username)
+    InstaLogger.logger().info('Extracting follower from ' + username)
     try:
         user_link = "https://www.instagram.com/{}".format(username)
         web_adress_navigator(browser, user_link)
