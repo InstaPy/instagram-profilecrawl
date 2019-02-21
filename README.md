@@ -22,7 +22,7 @@ Install the proper `chromedriver` for your operating system.  Once you (download
 ## Use it!
 Now you can start using it following this example:
 ```bash
-python3.5 crawl_profile.py username1 username2 ... usernameX
+python3.7 crawl_profile.py username1 username2 ... usernameX
 ```
 
 **Settings:**
