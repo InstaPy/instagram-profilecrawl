@@ -39,9 +39,9 @@ except Exception as exc:
 
 Settings.login_username = 'username'
 Settings.login_password = 'password'
-Settings.scrap_follower = True
-Settings.scrap_posts_likers = False
-Settings.scrap_posts_infos = False
+Settings.scrape_follower = True
+Settings.scrape_posts_likers = False
+Settings.scrape_posts_infos = False
 try:
     usernames = get_all_user_names()
     for username in usernames:

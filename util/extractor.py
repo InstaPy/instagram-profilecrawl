@@ -76,7 +76,7 @@ def get_user_info(browser, username):
             followers = { 'count' : extract_exact_info(infos[1])}
 
             try:
-                if Settings.scrap_follower == True:
+                if Settings.scrape_follower == True:
                     if isprivate == True:
                         InstaLogger.logger().info("Cannot get Follower List - private account")
                     else:
@@ -235,7 +235,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
         print("number of posts to do: ", num_of_posts_to_do)
         num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
         print("Getting first", num_of_posts_to_scroll,
-              "posts but check ", num_of_posts_to_do,
+              "posts but checking ", num_of_posts_to_do,
               " posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
         while (len(links2) < num_of_posts_to_do):
 
@@ -298,7 +298,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
         counter = counter + 1
 
         try:
-            caption, location_url, location_name, location_id, lat, lng, img, tags, likes, commentscount, date, user_commented_list, user_comments, mentions, user_liked_post = extract_post_info(
+            caption, location_url, location_name, location_id, lat, lng, imgs, imgdesc, tags, likes, commentscount, date, user_commented_list, user_comments, mentions, user_liked_post, views = extract_post_info(
                 browser, postlink)
 
             location = {
@@ -312,7 +312,8 @@ def extract_user_posts(browser, num_of_posts_to_do):
             post_infos.append({
                 'caption': caption,
                 'location': location,
-                'img': img,
+                'imgs': imgs,
+                'imgdesc': imgdesc,
                 'preview_img': preview_imgs.get(postlink, None),
                 'date': date,
                 'tags': tags,
@@ -320,6 +321,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
                     'count': likes,
                     'list': user_liked_post
                 },
+                'views': views,
                 'url': postlink,
                 'comments': {
                     'count': commentscount,
@@ -363,14 +365,14 @@ def extract_information(browser, username, limit_amount):
 
     post_infos = []
     user_commented_total_list = []
-    if Settings.scrap_posts_infos is True and isprivate is False:
+    if Settings.scrape_posts_infos is True and isprivate is False:
         try:
             post_infos, user_commented_total_list = extract_user_posts(browser, num_of_posts_to_do)
         except:
             InstaLogger.logger().error("Couldn't get user posts.")
 
     userinfo['posts'] = post_infos
-    userinfo['scrapped'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    userinfo['scraped'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     InstaLogger.logger().info("User " + username + " has " + str(len(user_commented_total_list)) + " comments.")
 
     # sorts the list by frequencies, so users who comment the most are at the top

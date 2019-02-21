@@ -10,10 +10,10 @@ class Settings:
     profile_commentors_location = os.path.join(BASE_DIR, 'profiles')
     profile_file_with_timestamp = True
     profile_commentors_file_with_timestamp = True
-    limit_amount = 12000
-    scrap_posts_infos = True
-    scrap_posts_likers = False
-    scrap_follower = False
+    limit_amount = 10
+    scrape_posts_infos = True
+    scrape_posts_likers = False
+    scrape_follower = False
     output_comments = False
     sleep_time_between_post_scroll = 1.5
     sleep_time_between_comment_loading = 1.5
