@@ -15,7 +15,6 @@ class Settings:
     scrape_posts_likers = False
     scrape_follower = False
     output_comments = False
-    max_buttonclicks_viewmorecomments = 500 #500x20comments = could load 1000 comments from one post
     sleep_time_between_post_scroll = 1.5
     sleep_time_between_comment_loading = 1.5
     mentions = True
