@@ -83,7 +83,7 @@ def extract_post_info(browser, postlink):
             InstaLogger.logger().info("alt text: " + imgdesc[-1])
     except Exception as err:
         InstaLogger.logger().error("ERROR - Post Image")
-        InstaLogger.logger().error( str(err) )
+        InstaLogger.logger().error(str(err))
 
     likes = 0
 
@@ -282,13 +282,10 @@ def extract_post_comments(browser, post):
     return user_comments, user_commented_list, int(len(comments) - 1)
 
 
-
 def extract_post_likers(browser, post, postlink, likes):
-    # new to like box instagram hides the likers which aren't in actual view.
-    # function has to be improved
     user_liked_list = []
 
-    xpath_identifier_user = "//div[contains(@class, 'HVWg4') or contains(@class ,'btag')]//a"
+    xpath_identifier_user = "//div[contains(@class, 'HVWg4') or contains(@class ,'btag')]/div/div/div/a"
 
     if (Settings.scrape_posts_likers is False):
         return user_liked_list
@@ -297,18 +294,21 @@ def extract_post_likers(browser, post, postlink, likes):
 
     postlink = postlink + "liked_by/"
     tried_catch_likers = 0
+    likers_list_before = 0
     try:
 
         # post.find_element_by_xpath("//a[contains(@class, 'zV_Nj')]").click()
         elementToClick = post.find_element_by_xpath("//a[contains(@class, 'zV_Nj')]")
         browser.execute_script("arguments[0].click();", elementToClick)
-        sleep(2)
+        sleep(3)
         # likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
         likers_list = post.find_elements_by_xpath(xpath_identifier_user)
+        print("LÄNGE " + str(len(likers_list)) + "")
         while len(likers_list) < likes:
-            likers_list_before = len(likers_list)
+
             InstaLogger.logger().info(
-                "new likers in actual view: " + str(len(likers_list)) + " - list: " + str(len(user_liked_list)) + " should be " + str(likes) + " -- scroll for more")
+                "new likers in actual view: " + str(len(likers_list)) + " - list: " + str(
+                    len(user_liked_list)) + " should be " + str(likes) + " -- scroll for more")
             try:
                 div_likebox_elem = browser.find_element_by_xpath(
                     "//div[contains(@class, 'i0EQd')]/div/div/div[last()]")  # old:wwxN2
@@ -316,6 +316,9 @@ def extract_post_likers(browser, post, postlink, likes):
                 browser.execute_script("arguments[0].scrollIntoView(true);", div_likebox_elem)
             except BaseException as e:
                 tried_catch_likers = tried_catch_likers + 1
+                div_likebox_elem = browser.find_element_by_xpath(
+                    "//div[contains(@class, 'i0EQd')]/div/div/div[1]")
+                browser.execute_script("arguments[0].scrollIntoView(true);", div_likebox_elem)
                 print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ") Message:" + e)
 
             sleep(Settings.sleep_time_between_post_scroll)
@@ -327,20 +330,19 @@ def extract_post_likers(browser, post, postlink, likes):
                 if username_liked_post not in user_liked_list:
                     user_liked_list.append(username_liked_post)
 
-
-            if (likers_list_before == len(likers_list)):
+            if (likers_list_before == len(user_liked_list)):
                 tried_catch_likers = tried_catch_likers + 1
                 print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
                 sleep(Settings.sleep_time_between_post_scroll * 1.5)
                 div_likebox_elem = browser.find_element_by_xpath(
-                    "//div[contains(@class, 'i0EQd')]/div/div/div[1]")  # old:wwxN2
+                    "//div[contains(@class, 'i0EQd')]/div/div/div[1]")
                 browser.execute_script("arguments[0].scrollIntoView(true);", div_likebox_elem)
 
             if tried_catch_likers > 10:
-                InstaLogger.logger().error("exit scrolling likers " + str(tried_catch_likers) + "x tries")
+                InstaLogger.logger().error("exit scrolling likers " + str(tried_catch_likers) + "x tries - liker list: " + str(
+                    len(user_liked_list)) + " should be " + str(likes) + "")
                 break
-
-
+            likers_list_before = len(user_liked_list)
 
         InstaLogger.logger().info('likers: ' + str(len(user_liked_list)))
 
