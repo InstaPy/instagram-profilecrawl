@@ -130,7 +130,7 @@ def extract_exact_info(info):
 
 
 def extract_followers(browser, username):
-    InstaLogger.logger().info('Extracting information from ' + username)
+    InstaLogger.logger().info('Extracting follower from ' + username)
     try:
         user_link = "https://www.instagram.com/{}".format(username)
         web_adress_navigator(browser, user_link)
@@ -185,7 +185,7 @@ def extract_followers(browser, username):
                 break
 
             elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate _0imsa ']")
-            list_segment = "";
+            list_segment = ""
             for i in range(12):
                 val = elems[i].get_attribute('innerHTML')
                 list_segment += (val + '\n')
@@ -202,7 +202,7 @@ def extract_followers(browser, username):
         except:
             continue
 
-    list_segment = "";
+    list_segment = ""
     elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate _0imsa ']")
     for i in range(len(elems)):
         val = elems[i].get_attribute('innerHTML')

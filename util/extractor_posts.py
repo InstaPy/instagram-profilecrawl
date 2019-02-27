@@ -66,7 +66,7 @@ def extract_post_info(browser, postlink):
         InstaLogger.logger().info("lat: " + lat)
         InstaLogger.logger().info("lng: " + lng)
     except:
-        InstaLogger.logger().error("getting Location Infos  (perhaps not set)")
+        InstaLogger.logger().warning("getting Location Infos (perhaps not set)")
 
     try:
         date = post.find_element_by_xpath('//a/time').get_attribute("datetime")
@@ -194,6 +194,10 @@ def extract_post_comments(browser, post):
     # first element is the text, second either the first comment
     # or the button to display all the comments
 
+    # sometimes getting comments ends in a endless loop
+    # therefore reduce the run
+    comments_found_last_run = 0
+    comments_run_same_length = 0
     comments = []
     user_commented_list = []
     user_comments = []
@@ -209,23 +213,37 @@ def extract_post_comments(browser, post):
                         'view all')):
                     try:
                         if comments[1].find_element_by_tag_name('button'):
-                            print("clicking button for loading more")
+                            print("clicking button for loading more comments")
                             browser.execute_script("arguments[0].click();", comments[1].find_element_by_tag_name('button'))
                         elif comments[1].find_element_by_tag_name('a'):
                             print("clicking a for loading more")
                             browser.execute_script("arguments[0].click();", comments[1].find_element_by_tag_name('a'))
                         sleep(Settings.sleep_time_between_comment_loading)
+
+                        comment_list = post.find_element_by_tag_name('ul')
+                        comments = comment_list.find_elements_by_tag_name('li')
+                        print("comments (loaded: " + str(len(comments)) + "/lastrun: " + str(
+                            comments_found_last_run) + ")")
+
+                        if (comments_found_last_run == len(comments) ):
+                            comments_run_same_length = comments_run_same_length + 1
+                            if comments_run_same_length > 10:
+                                InstaLogger.logger().error("exit getting comments: " + str(comments_run_same_length) + "x same length of comments, perhaps endless loop")
+                                break
+                        else:
+                            comments_same_length = 0
+
+                        comments_found_last_run = len(comments)
                     except:
-                        print("error clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
+                        InstaLogger.logger().error("error clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
                             len(comments)) + ")")
                         tried_catch_comments = tried_catch_comments + 1
                         if tried_catch_comments > 10:
-                            print("exit getting comments")
+                            InstaLogger.logger().error("exit getting comments, " + str(tried_catch_comments) + "x tried to get comments")
                             break
                         sleep(Settings.sleep_time_between_comment_loading)
 
-                    comment_list = post.find_element_by_tag_name('ul')
-                    comments = comment_list.find_elements_by_tag_name('li')
+
                 InstaLogger.logger().info("found comments: " + str(len(comments)))
             else:
                 print("found comment: 1")
@@ -261,44 +279,52 @@ def extract_post_comments(browser, post):
 
 
 def extract_post_likers(browser, post, postlink, likes):
+    #new to like box instagram hides the likers which aren't in actual view.
+    #function has to be improved
     user_liked_list = []
+
+    xpath_identifier_user = "//div[contains(@class, 'HVWg4') or contains(@class ,'btag')]//a"
+
     if (Settings.scrape_posts_likers is False):
         return user_liked_list
     else:
         InstaLogger.logger().info("GETTING LIKERS FROM POST")
 
     postlink = postlink + "liked_by/"
+    tried_catch_likers = 0
     try:
 
-        post.find_element_by_xpath("//a[@class='zV_Nj']").click()
-
-        likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
-
-        tried_catch_likers = 0
+        #post.find_element_by_xpath("//a[contains(@class, 'zV_Nj')]").click()
+        elementToClick = post.find_element_by_xpath("//a[contains(@class, 'zV_Nj')]")
+        browser.execute_script("arguments[0].click();", elementToClick)
+        sleep(2)
+        #likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
+        likers_list = post.find_elements_by_xpath(xpath_identifier_user)
         while len(likers_list) < likes:
             likers_list_before = len(likers_list)
             InstaLogger.logger().info(
                 "found likers: " + str(len(likers_list)) + " should be " + str(likes) + " -- scroll for more")
             try:
-                div_likebox_elem = browser.find_element_by_xpath("//div[contains(@class, 'wwxN2')]")
-                browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", div_likebox_elem)
-
+                div_likebox_elem = browser.find_element_by_xpath("//div[contains(@class, 'i0EQd')]/div/div/div[last()]") #old:wwxN2
+                #browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", div_likebox_elem)
+                browser.execute_script("arguments[0].scrollIntoView(true);", div_likebox_elem)
             except BaseException as e:
                 tried_catch_likers = tried_catch_likers + 1
                 print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ") Message:" + e)
 
             sleep(Settings.sleep_time_between_post_scroll)
-            likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
+            #likers_list = post.find_elements_by_xpath(" //li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
+            likers_list = post.find_elements_by_xpath(xpath_identifier_user)
             if (likers_list_before == len(likers_list)):
                 tried_catch_likers = tried_catch_likers + 1
                 print("error on scrolling - next try (tried: " + str(tried_catch_likers) + ")")
                 sleep(Settings.sleep_time_between_post_scroll * 1.5)
 
             if tried_catch_likers > 10:
-                print("exit scrolling likers")
+                InstaLogger.logger().error("exit scrolling likers " + str(tried_catch_likers) + "x tries")
                 break
 
-        likers_list = post.find_elements_by_xpath("//li[@class='wo9IH']//a[contains(@class, 'FPmhX')]")
+        likers_list = post.find_elements_by_xpath(xpath_identifier_user)
 
         for liker in likers_list:
             user_like = liker.get_attribute("href").split('/')
