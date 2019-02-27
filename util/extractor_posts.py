@@ -60,14 +60,13 @@ def extract_post_info(browser, postlink):
             data = response.json()
             lat = data['graphql']['location']['lat']
             lng = data['graphql']['location']['lng']
-        InstaLogger.logger().info("location_id: " + location_id)
-        InstaLogger.logger().info("location_url: " + location_url)
-        InstaLogger.logger().info("location_name: " + location_name)
-        InstaLogger.logger().info("lat: " + lat)
-        InstaLogger.logger().info("lng: " + lng)
-    except:
+        InstaLogger.logger().info("location_id: " + str(location_id))
+        InstaLogger.logger().info("location_url: " + str(location_url))
+        InstaLogger.logger().info("location_name: " + str(location_name))
+        InstaLogger.logger().info("lat: " + str(lat))
+        InstaLogger.logger().info("lng: " + str(lng))
+    except Exception as err:
         InstaLogger.logger().warning("getting Location Infos (perhaps not set)")
-
     try:
         date = post.find_element_by_xpath('//a/time').get_attribute("datetime")
         InstaLogger.logger().info("Post date: " + str(date))
@@ -82,8 +81,9 @@ def extract_post_info(browser, postlink):
             imgdesc.append(i.get_attribute('alt'))
             InstaLogger.logger().info("post image: " + imgs[-1])
             InstaLogger.logger().info("alt text: " + imgdesc[-1])
-    except:
+    except Exception as err:
         InstaLogger.logger().error("ERROR - Post Image")
+        InstaLogger.logger().error( str(err) )
 
     likes = 0
 
