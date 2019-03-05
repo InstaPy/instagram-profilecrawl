@@ -73,7 +73,6 @@ Should the profile json file should get a timestamp
 ```python
 Settings.profile_file_with_timestamp = True
 ```
-
 Path to the save the commentors:
 ```python
 Settings.profile_commentors_location = os.path.join(BASE_DIR, 'profiles')
@@ -103,6 +102,11 @@ Should the users who liked the post saved in json files
 **Attention:** be aware it would take a lot of time. script just can load 12 like at once. before making a break and load again
 ```python
 Settings.scrape_posts_likers = True
+```
+Should the profile followers be scrap
+**Attention:** crawler must has be logged in (see above) / crashes sometimes on huge accounts
+```python
+Settings.scrape_follower = True
 ```
 
 Time between post scrolling (increase if you got errors)
