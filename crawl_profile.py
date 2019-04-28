@@ -36,17 +36,21 @@ except Exception as exc:
     print(exc)
     sys.exit()
 
-
+try:
+    if len(Settings.login_username) != 0:
+        login(browser, Settings.login_username, Settings.login_password)
+except Exception as exc:
+    print("Error login user: " + Settings.login_username)
+    sys.exit()
+    
+    
 try:
     usernames = get_all_user_names()
-
     for username in usernames:
         print('Extracting information from ' + username)
         information = []
         user_commented_list = []
         try:
-            if len(Settings.login_username) != 0:
-                login(browser, Settings.login_username, Settings.login_password)
             information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
         except:
             print("Error with user " + username)
