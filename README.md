@@ -17,7 +17,7 @@ It uses selenium and requests to get all the information so install them with:
 pip install -r requirements.txt
 ```
 
-Install the proper `chromedriver` for your operating system.  Once you (download it)[https://sites.google.com/a/chromium.org/chromedriver/downloads] just drag and drop it into `instagram-profilecrawl/assets` directory.
+Install the proper `chromedriver` for your operating system.  Once you [download it](https://sites.google.com/a/chromium.org/chromedriver/downloads) just drag and drop it into `instagram-profilecrawl/assets` directory.
 
 ## Use it!
 Now you can start using it following this example:
