@@ -335,7 +335,29 @@ def extract_user_posts(browser, num_of_posts_to_do):
             InstaLogger.logger().error(err)
         except:
             InstaLogger.logger().error("Could not get information from post: " + postlink)
-    return post_infos, user_commented_total_list
+    tags_stats = []
+    if Settings.aggregate_tags_stats is True:
+        InstaLogger.logger().info('Extracting statistics for all the tags used in posts')
+        t = list(set([tag for post in post_infos for tag in post['tags']]))
+        for tag in t:
+            stat = extract_tag_stat(browser, tag)
+            tags_stats.append(stat)
+    return post_infos, user_commented_total_list, tags_stats
+
+
+def extract_tag_stat(browser, tag):
+    InstaLogger.logger().info('Extracting tag statistics for ' + tag)
+    try:
+        tag_link = "https://www.instagram.com/explore/tags/{}".format(tag.replace('#', '').lower())
+        web_adress_navigator(browser, tag_link)
+    except PageNotFound404 as e:
+        raise NoInstaProfilePageFound(e)
+
+    number_of_posts = browser.find_element_by_class_name('g47SY').text
+    return {
+        'tag': tag,
+        'number_of_posts': int(number_of_posts.replace(",", ""))
+    }
 
 
 def extract_information(browser, username, limit_amount):
@@ -367,11 +389,12 @@ def extract_information(browser, username, limit_amount):
     user_commented_total_list = []
     if Settings.scrape_posts_infos is True and isprivate is False:
         try:
-            post_infos, user_commented_total_list = extract_user_posts(browser, num_of_posts_to_do)
+            post_infos, user_commented_total_list, tags_stats = extract_user_posts(browser, num_of_posts_to_do)
         except:
             InstaLogger.logger().error("Couldn't get user posts.")
 
     userinfo['posts'] = post_infos
+    userinfo['tags_stats'] = tags_stats
     userinfo['scraped'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     InstaLogger.logger().info("User " + username + " has " + str(len(user_commented_total_list)) + " comments.")
 
