@@ -94,3 +94,6 @@ virtualenv/
 
 # Rope project settings
 .ropeproject
+
+# Max OSX files
+.DS_Store
