@@ -31,7 +31,7 @@ def extract_post_info(browser, postlink):
     caption = ''
     username = ''
     try:
-        username = post.find_element_by_class_name('e1e1d').text
+        username = post.find_element_by_class_name('e1e1d').find_element_by_tag_name('a').text
     except:
         InstaLogger.logger().error("ERROR - getting Post infos (username) ")
 
@@ -265,10 +265,11 @@ def extract_post_comments(browser, post):
                     try:
                         user_comment = {
                             'user': user_commented[3],
-                            'comment': comm.find_element_by_tag_name('span').text
+                            'comment': comm.find_element_by_css_selector('h2 + span, h3 + span').text
                         }
+                        print(user_comment)
                         InstaLogger.logger().info(
-                            user_commented[3] + " -- " + comm.find_element_by_tag_name('span').text)
+                            user_commented[3] + " -- " + comm.find_element_by_css_selector('h2 + span, h3 + span').text)
                         user_comments.append(user_comment)
                     except:
                         InstaLogger.logger().error("ERROR something went wrong getting comment")
