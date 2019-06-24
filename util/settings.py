@@ -10,7 +10,7 @@ class Settings:
     profile_commentors_location = os.path.join(BASE_DIR, 'profiles')
     profile_file_with_timestamp = True
     profile_commentors_file_with_timestamp = True
-    limit_amount = 4
+    limit_amount = 10
     scrape_posts_infos = True
     scrape_posts_likers = False
     scrape_follower = False
