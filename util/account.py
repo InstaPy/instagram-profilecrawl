@@ -1,24 +1,19 @@
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import math
+import datetime
 import sys
 from time import sleep
 from re import findall
-import math
-
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 import requests
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 from util.settings import Settings
 from .util import web_adress_navigator
 from util.extractor_posts import extract_post_info
-import datetime
 from util.instalogger import InstaLogger
 from util.exceptions import PageNotFound404, NoInstaProfilePageFound
 
@@ -102,6 +97,7 @@ def explicit_wait(browser, track, ec_params, timeout=35, notify=True):
     :param browser: webdriver instance
     :param track: short name of the expected condition
     :param ec_params: expected condition specific parameters - [param1, param2]
+    :param timeout: amount of time (in seconds) for browser to wait for element (default: 15s)
     """
     # list of available tracks:
     # <https://seleniumhq.github.io/selenium/docs/api/py/webdriver_support/
