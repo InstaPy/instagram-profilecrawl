@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import requests
 from util.settings import Settings
 from .util import web_adress_navigator
-from util.extractor_posts import extract_post_info
+from util.extractor_posts import InstagramPost
 import datetime
 from util.instalogger import InstaLogger
 from util.exceptions import PageNotFound404, NoInstaProfilePageFound
@@ -58,39 +58,20 @@ def get_user_info(browser, username):
     except:
         InstaLogger.logger().info("image is empty")
 
+    infos = None
     try:
         infos = container.find_elements_by_class_name('Y8-fY')
-
-        try:
-            num_of_posts = extract_exact_info(infos[0])
-        except:
-            InstaLogger.logger().error("Number of Posts empty")
-
-
-        try:
-            following = { 'count' : extract_exact_info(infos[2])}
-        except:
-            InstaLogger.logger().error("Following is empty")
-
-        try:
-            followers = { 'count' : extract_exact_info(infos[1])}
-
-            try:
-                if Settings.scrape_follower == True:
-                    if isprivate == True:
-                        InstaLogger.logger().info("Cannot get Follower List - private account")
-                    else:
-                        followers['list'] = extract_followers(browser, username)
-            except Exception as exception:
-                # Output unexpected Exceptions.
-                print("Unexpected error:", sys.exc_info()[0])
-                print(exception)
-
-                InstaLogger.logger().error("Cannot get Follower List")
-        except:
-            InstaLogger.logger().error("Follower is empty")
     except:
-        InstaLogger.logger().error("Infos (Following, Abo, Posts) is empty")
+        InstaLogger.logger().error("Infos is empty")
+
+    if infos:
+        num_of_posts = { 'count': extract_exact_info(infos[0])}
+        following = { 'count' : extract_exact_info(infos[2])}
+        followers = { 'count' : extract_exact_info(infos[1])}
+
+        if Settings.scrape_follower == True:
+            if not isprivate:
+                followers['list'] = extract_followers(browser, username)
 
 
     information = {
@@ -105,13 +86,14 @@ def get_user_info(browser, username):
         'isprivate': isprivate,
     }
 
-    InstaLogger.logger().info("alias name: " + information['alias'])
-    InstaLogger.logger().info("bio: " + information['bio'])
-    InstaLogger.logger().info("url: " + information['bio_url'])
+    InstaLogger.logger().info("Alias name: " + information['alias'])
+    InstaLogger.logger().info("Bio: " + information['bio'])
+    InstaLogger.logger().info("Url: " + information['bio_url'])
     InstaLogger.logger().info("Posts: " + str(information['num_of_posts']))
     InstaLogger.logger().info("Follower: " + str(information['followers']['count']))
     InstaLogger.logger().info("Following: " + str(information['following']))
-    InstaLogger.logger().info("isPrivate: " + str(information['isprivate']))
+    InstaLogger.logger().info("Is private: " + str(information['isprivate']))
+
     return information
 
 
@@ -194,7 +176,7 @@ def extract_followers(browser, username):
             for i in range(12):
                 browser.execute_script("document.getElementsByClassName('PZuss')[0].children[0].remove()")
 
-            print(time() - start)
+            InstaLogger.logger().info(time() - start)
 
         except (KeyboardInterrupt, SystemExit):
             # f.close()
@@ -232,9 +214,9 @@ def extract_user_posts(browser, num_of_posts_to_do):
         previouslen = 0
         breaking = 0
 
-        print("number of posts to do: ", num_of_posts_to_do)
+        InstaLogger.logger().info("number of posts to do: ", num_of_posts_to_do)
         num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
-        print("Getting first", num_of_posts_to_scroll,
+        InstaLogger.logger().info("Getting first", num_of_posts_to_scroll,
               "posts but checking ", num_of_posts_to_do,
               " posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
         while (len(links2) < num_of_posts_to_do):
@@ -255,29 +237,29 @@ def extract_user_posts(browser, num_of_posts_to_do):
                                 src = img.get_attribute('src')
                                 preview_imgs[href] = src
                             except NoSuchElementException:
-                                print("img exception 132")
+                                InstaLogger.logger().info("img exception 132")
                                 continue
                     except Exception as err:
-                        print(err)
+                        InstaLogger.logger().info(err)
 
             for link in links:
                 if "/p/" in link:
                     if (len(links2) < num_of_posts_to_do):
                         links2.append(link)
             links2 = list(set(links2))
-            print("Scrolling profile ", len(links2), "/", num_of_posts_to_scroll)
+            InstaLogger.logger().info("Scrolling profile ", len(links2), "/", num_of_posts_to_scroll)
             body_elem.send_keys(Keys.END)
             sleep(Settings.sleep_time_between_post_scroll)
 
             ##remove bellow part to never break the scrolling script before reaching the num_of_posts
             if (len(links2) == previouslen):
                 breaking += 1
-                print("breaking in ", 4 - breaking,
+                InstaLogger.logger().info("breaking in ", 4 - breaking,
                       "...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
             else:
                 breaking = 0
             if breaking > 3:
-                print("Not getting any more posts, ending scrolling")
+                InstaLogger.logger().info("Not getting any more posts, ending scrolling")
                 sleep(2)
                 break
             previouslen = len(links2)
@@ -294,54 +276,54 @@ def extract_user_posts(browser, num_of_posts_to_do):
 
     for postlink in links2:
 
-        print("\n", counter, "/", len(links2))
+        InstaLogger.logger().info("\n", counter, "/", len(links2))
         counter = counter + 1
 
         try:
-            caption, location_url, location_name, location_id, lat, lng, imgs, imgdesc, tags, likes, commentscount, date, user_commented_list, user_comments, mentions, user_liked_post, views = extract_post_info(
-                browser, postlink)
+            instagram_post = InstagramPost(browser, postlink)
+            instagram_post.extract_post_info()
 
             location = {
-                'location_url': location_url,
-                'location_name': location_name,
-                'location_id': location_id,
-                'latitude': lat,
-                'longitude': lng,
+                'location_url': instagram_post.location_url,
+                'location_name': instagram_post.location_name,
+                'location_id': instagram_post.location_id,
+                'latitude': instagram_post.lat,
+                'longitude': instagram_post.lng,
             }
 
             post_infos.append({
-                'caption': caption,
+                'caption': instagram_post.caption,
                 'location': location,
-                'imgs': imgs,
-                'imgdesc': imgdesc,
-                'preview_img': preview_imgs.get(postlink, None),
-                'date': date,
-                'tags': tags,
+                'imgs': instagram_post.imgs,
+                'imgdesc': instagram_post.imgdesc,
+                'preview_img': preview_imgs.get(instagram_post.postlink, None),
+                'date': instagram_post.date,
+                'tags': instagram_post.tags,
                 'likes': {
-                    'count': likes,
-                    'list': user_liked_post
+                    'count': instagram_post.likes,
+                    'list': instagram_post.user_liked_list
                 },
-                'views': views,
-                'url': postlink,
+                'views': instagram_post.views,
+                'url': instagram_post.postlink,
                 'comments': {
-                    'count': commentscount,
-                    'list': user_comments
+                    'count': instagram_post.commentscount,
+                    'list': instagram_post.user_comments
                 },
-                'mentions': mentions
+                'mentions': instagram_post.mentions
             })
-            user_commented_total_list = user_commented_total_list + user_commented_list
+            user_commented_total_list = user_commented_total_list + instagram_post.user_commented_list
         except NoSuchElementException as err:
-            InstaLogger.logger().error("Could not get information from post: " + postlink)
+            InstaLogger.logger().error("Could not get information from post: " + instagram_post.postlink)
             InstaLogger.logger().error(err)
-        except:
-            InstaLogger.logger().error("Could not get information from post: " + postlink)
     return post_infos, user_commented_total_list
 
 
 def extract_information(browser, username, limit_amount):
-    InstaLogger.logger().info('Extracting information from ' + username)
     """Get all the information for the given username"""
+
+    InstaLogger.logger().info('Extracting information from ' + username)
     isprivate = False
+
     try:
         user_link = "https://www.instagram.com/{}/".format(username)
         web_adress_navigator(browser, user_link)
@@ -350,15 +332,10 @@ def extract_information(browser, username, limit_amount):
 
     num_of_posts_to_do = 999999
 
-
-    try:
-        userinfo = get_user_info(browser, username)
-        if limit_amount < 1:
-            limit_amount = 999999
-        num_of_posts_to_do = min(limit_amount, userinfo['num_of_posts'])
-    except Exception as err:
-        InstaLogger.logger().error("Couldn't get user profile. - Terminating")
-        quit()
+    userinfo = get_user_info(browser, username)
+    if limit_amount < 1:
+        limit_amount = 999999
+    num_of_posts_to_do = min(limit_amount, userinfo['num_of_posts'])
 
 
     prev_divs = browser.find_elements_by_class_name('_70iju')
@@ -366,10 +343,7 @@ def extract_information(browser, username, limit_amount):
     post_infos = []
     user_commented_total_list = []
     if Settings.scrape_posts_infos is True and isprivate is False:
-        try:
-            post_infos, user_commented_total_list = extract_user_posts(browser, num_of_posts_to_do)
-        except:
-            InstaLogger.logger().error("Couldn't get user posts.")
+        post_infos, user_commented_total_list = extract_user_posts(browser, num_of_posts_to_do)
 
     userinfo['posts'] = post_infos
     userinfo['scraped'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
