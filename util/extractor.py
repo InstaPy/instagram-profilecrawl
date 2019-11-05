@@ -54,14 +54,20 @@ class InstagramUser:
         return bio
 
     def _user_bio_url(self):
-        bio_url = self.container.find_element_by_class_name('yLUwa').text
-        return bio_url
+        try:
+            bio_url = self.container.find_element_by_class_name('yLUwa').text
+            return bio_url
+        except NoSuchElementException:
+            return self.bio_url
 
 
     def _user_profile_image(self):
-        img_container = self.browser.find_element_by_class_name('RR-M-')
-        prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
-        return prof_img
+        try:
+            img_container = self.browser.find_element_by_class_name('RR-M-')
+            profile_image = img_container.find_element_by_tag_name('img').get_attribute('src')
+            return profile_image
+        except NoSuchElementException:
+            return self.profile_image
 
 
     def get_user_info(self):
@@ -257,8 +263,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
             ##remove bellow part to never break the scrolling script before reaching the num_of_posts
             if (len(links2) == previouslen):
                 breaking += 1
-                InstaLogger.logger().info("breaking in ", 4 - breaking,
-                      "...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
+                InstaLogger.logger().info(f"breaking in {4 - breaking}...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
             else:
                 breaking = 0
             if breaking > 3:

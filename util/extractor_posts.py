@@ -9,7 +9,7 @@ from util.settings import Settings
 from .util import web_adress_navigator
 import datetime
 from util.instalogger import InstaLogger
-from util.exceptions import PageNotFound404, NoInstaProfilePageFound, NoInstaPostPageFound
+from util.exceptions import PageNotFound404, NoInstaPostPageFound
 
 
 class InstagramPost:
