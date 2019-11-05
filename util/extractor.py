@@ -19,82 +19,93 @@ from util.instalogger import InstaLogger
 from util.exceptions import PageNotFound404, NoInstaProfilePageFound
 
 
-def get_user_info(browser, username):
-    """Get the basic user info from the profile screen"""
-    num_of_posts = 0
-    followers = { 'count' : 0}
-    following = { 'count' : 0}
-    prof_img = ""
-    bio = ""
-    bio_url = ""
-    alias = ""
-    container = browser.find_element_by_class_name('v9tJq')
-    isprivate = False
-    try:
-        if container.find_element_by_class_name('Nd_Rl'):
-            isprivate = True
-    except:
-        isprivate = False
+class InstagramUser:
+    def __init__(self, browser, username):
+        self.browser = browser
+        self.username = username
+        self.num_of_posts = {'count': 0}
+        self.followers = {'count' : 0}
+        self.following = {'count' : 0}
+        self.profile_image = ""
+        self.bio = ""
+        self.bio_url = ""
+        self.alias = ""
+        self.isprivate = False
+        self.container = self.browser.find_element_by_class_name('v9tJq')
+        self.posts = []
+        self.scraped = None
 
-    try:
-        alias = container.find_element_by_class_name('-vDIg').find_element_by_tag_name('h1').text
-    except:
-        InstaLogger.logger().info("alias is empty")
+    def _is_user_private(self):
+        try:
+            if self.container.find_element_by_class_name('Nd_Rl'):
+                isprivate = True
+        except:
+            isprivate = False
 
-    try:
-        bio = container.find_element_by_class_name('-vDIg') \
-            .find_element_by_tag_name('span').text
-    except:
-        InstaLogger.logger().info("Bio is empty")
+        return isprivate
 
-    try:
-        bio_url = container.find_element_by_class_name('yLUwa').text
-    except:
-        InstaLogger.logger().info("Bio Url is empty")
+    def _user_alias(self):
+        alias = self.container.find_element_by_class_name('-vDIg').find_element_by_tag_name('h1').text
 
-    try:
-        img_container = browser.find_element_by_class_name('RR-M-')
+        return alias
+
+    def _user_bio(self):
+        bio = self.container.find_element_by_class_name('-vDIg').find_element_by_tag_name('span').text
+        return bio
+
+    def _user_bio_url(self):
+        bio_url = self.container.find_element_by_class_name('yLUwa').text
+        return bio_url
+
+
+    def _user_profile_image(self):
+        img_container = self.browser.find_element_by_class_name('RR-M-')
         prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
-    except:
-        InstaLogger.logger().info("image is empty")
-
-    infos = None
-    try:
-        infos = container.find_elements_by_class_name('Y8-fY')
-    except:
-        InstaLogger.logger().error("Infos is empty")
-
-    if infos:
-        num_of_posts = { 'count': extract_exact_info(infos[0])}
-        following = { 'count' : extract_exact_info(infos[2])}
-        followers = { 'count' : extract_exact_info(infos[1])}
-
-        if Settings.scrape_follower == True:
-            if not isprivate:
-                followers['list'] = extract_followers(browser, username)
+        return prof_img
 
 
-    information = {
-        'alias': alias,
-        'username': username,
-        'bio': bio,
-        'prof_img': prof_img,
-        'num_of_posts': num_of_posts,
-        'followers': followers,
-        'following': following,
-        'bio_url': bio_url,
-        'isprivate': isprivate,
-    }
+    def get_user_info(self):
+        """Get the basic user info from the profile screen"""
+        
+        self.isprivate = self._is_user_private()
+        self.alias = self._user_alias()
+        self.bio = self._user_bio()
+        self.bio_url = self._user_bio_url()
+        self.profile_image = self._user_profile_image()
 
-    InstaLogger.logger().info("Alias name: " + information['alias'])
-    InstaLogger.logger().info("Bio: " + information['bio'])
-    InstaLogger.logger().info("Url: " + information['bio_url'])
-    InstaLogger.logger().info("Posts: " + str(information['num_of_posts']))
-    InstaLogger.logger().info("Follower: " + str(information['followers']['count']))
-    InstaLogger.logger().info("Following: " + str(information['following']))
-    InstaLogger.logger().info("Is private: " + str(information['isprivate']))
+        infos = self.container.find_elements_by_class_name('Y8-fY')
+        if infos:
+            self.num_of_posts = {'count': extract_exact_info(infos[0])}
+            self.following = {'count' : extract_exact_info(infos[2])}
+            self.followers = {'count' : extract_exact_info(infos[1])}
 
-    return information
+            if Settings.scrape_follower == True:
+                if not isprivate:
+                    self.followers['list'] = extract_followers(self.browser, self.username)
+
+
+        InstaLogger.logger().info("Alias name: " + self.alias)
+        InstaLogger.logger().info("Bio: " + self.bio)
+        InstaLogger.logger().info("Url: " + self.bio_url)
+        InstaLogger.logger().info("Posts: " + str(self.num_of_posts))
+        InstaLogger.logger().info("Follower: " + str(self.followers['count']))
+        InstaLogger.logger().info("Following: " + str(self.following))
+        InstaLogger.logger().info("Is private: " + str(self.isprivate))
+
+    def to_dict(self):
+        output = {}
+        output['username'] = self.username
+        output['num_of_posts'] = self.num_of_posts
+        output['followers'] = self.followers
+        output['following'] = self.following
+        output['profile_image'] =self.profile_image
+        output['bio'] = self.bio
+        output['bio_url'] = self.bio_url
+        output['alias'] = self.alias
+        output['isprivate'] = self.isprivate
+        output['posts'] = self.posts
+        output['scraped'] = self.scraped
+        return output
 
 
 def extract_exact_info(info):
@@ -229,17 +240,10 @@ def extract_user_posts(browser, num_of_posts_to_do):
                 for link_elem in elems:
 
                     href = link_elem.get_attribute('href')
-                    try:
-                        if "/p/" in href:
-                            try:
-                                img = link_elem.find_element_by_tag_name('img')
-                                src = img.get_attribute('src')
-                                preview_imgs[href] = src
-                            except NoSuchElementException:
-                                InstaLogger.logger().info("img exception 132")
-                                continue
-                    except Exception as err:
-                        InstaLogger.logger().error(err)
+                    if "/p/" in href:
+                        img = link_elem.find_element_by_tag_name('img')
+                        src = img.get_attribute('src')
+                        preview_imgs[href] = src
 
             for link in links:
                 if "/p/" in link:
@@ -331,10 +335,13 @@ def extract_information(browser, username, limit_amount):
 
     num_of_posts_to_do = 999999
 
-    userinfo = get_user_info(browser, username)
+    ig_user = InstagramUser(browser, username)
+    ig_user.get_user_info()
+
     if limit_amount < 1:
         limit_amount = 999999
-    num_of_posts_to_do = min(limit_amount, userinfo['num_of_posts']['count'])
+
+    num_of_posts_to_do = min(limit_amount, ig_user.num_of_posts['count'])
 
 
     prev_divs = browser.find_elements_by_class_name('_70iju')
@@ -344,8 +351,8 @@ def extract_information(browser, username, limit_amount):
     if Settings.scrape_posts_infos is True and isprivate is False:
         post_infos, user_commented_total_list = extract_user_posts(browser, num_of_posts_to_do)
 
-    userinfo['posts'] = post_infos
-    userinfo['scraped'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ig_user.posts = post_infos
+    ig_user.scraped = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     InstaLogger.logger().info("User " + username + " has " + str(len(user_commented_total_list)) + " comments.")
 
     # sorts the list by frequencies, so users who comment the most are at the top
@@ -365,4 +372,4 @@ def extract_information(browser, username, limit_amount):
                 user_commented_list.append(user_commented_total_list[i])
             last = user_commented_total_list[i]
 
-    return userinfo, user_commented_list
+    return ig_user, user_commented_list

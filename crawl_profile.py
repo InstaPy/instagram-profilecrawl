@@ -23,7 +23,7 @@ with SetupBrowserEnvironment() as browser:
 
         information, user_commented_list = extract_information(browser, username, Settings.limit_amount)
 
-        Datasaver.save_profile_json(username, information)
+        Datasaver.save_profile_json(username, information.to_dict())
         print ("Number of users who commented on their profile is ", len(user_commented_list),"\n")
 
         Datasaver.save_profile_commenters_txt(username, user_commented_list)
