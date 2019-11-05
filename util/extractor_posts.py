@@ -149,17 +149,14 @@ class InstagramPost:
         imgs = []
         imgdesc = []
 
-        try:
-            img_tags = post.find_elements_by_class_name('FFVAD')
-            InstaLogger.logger().info("number of images: " + str(len(img_tags)))
-            for i in img_tags:
-                imgs.append(i.get_attribute('src'))
-                imgdesc.append(i.get_attribute('alt'))
-                InstaLogger.logger().info("post image: " + imgs[-1])
-                InstaLogger.logger().info("alt text: " + imgdesc[-1])
-        except Exception as err:
-            InstaLogger.logger().error("ERROR - Post Image")
-            InstaLogger.logger().error(str(err))
+        img_tags = self.post.find_elements_by_class_name('FFVAD')
+        InstaLogger.logger().info("number of images: " + str(len(img_tags)))
+
+        for i in img_tags:
+            imgs.append(i.get_attribute('src'))
+            imgdesc.append(i.get_attribute('alt'))
+            InstaLogger.logger().info(f"post image: {imgs[-1]}")
+            InstaLogger.logger().info(f"alt text: {imgdesc[-1]}")
 
         return img_tags, imgs, imgdesc
 
@@ -168,29 +165,22 @@ class InstagramPost:
         if (Settings.mentions is False):
             return mentions
 
-        try:
-            if self.post.find_elements_by_class_name('JYWcJ'):  # perhaps JYWcJ
-                mention_list = self.post.find_elements_by_class_name('JYWcJ')  # perhaps JYWcJ
-                for mention in mention_list:
-                    user_mention = mention.get_attribute("href").split('/')
-                    mentions.append(user_mention[3])
-                InstaLogger.logger().info("mentions: " + str(len(mentions)))
-        except Exception as err:
-            InstaLogger.logger().error("Error - getting mentions")
-            InstaLogger.logger().error(err)
+        if self.post.find_elements_by_class_name('JYWcJ'):  # perhaps JYWcJ
+            mention_list = self.post.find_elements_by_class_name('JYWcJ')  # perhaps JYWcJ
+            for mention in mention_list:
+                user_mention = mention.get_attribute("href").split('/')
+                mentions.append(user_mention[3])
+            InstaLogger.logger().info(f"mentions: {str(len(mentions))}")
+
         return mentions
 
     def extract_caption(self, user_comments, username):
         caption = ''
-        try:
-            if len(user_comments) > 0:
-                user_commented = user_comments[0]
-                if username == user_commented['user']:
-                    caption = user_commented['comment']
-                    InstaLogger.logger().info("caption: " + caption)
-        except Exception as err:
-            InstaLogger.logger().error("Error - getting caption")
-            InstaLogger.logger().error(err)
+        if len(user_comments) > 0:
+            user_commented = user_comments[0]
+            if username == user_commented['user']:
+                caption = user_commented['comment']
+                InstaLogger.logger().info(f"caption: {caption}")
         return caption
 
     def extract_tags_from_caption(self, caption):
@@ -210,7 +200,7 @@ class InstagramPost:
                 if len(comments) > 1:
                     # load hidden comments
                     comments = load_more_comments(comments)
-                    InstaLogger.logger().info("found comments: " + str(len(comments)))
+                    InstaLogger.logger().info(f"found comments: {len(comments)}")
 
                 else:
                     InstaLogger.logger().info("found comment: 1")
@@ -240,14 +230,12 @@ class InstagramPost:
 
                 comment_list = self.post.find_element_by_tag_name('ul')
                 comments = comment_list.find_elements_by_tag_name('li')
-                InstaLogger.logger().info("comments (loaded: " + str(len(comments)) + "/lastrun: " + str(
-                    comments_found_last_run) + ")")
+                InstaLogger.logger().info(f"comments (loaded: {len(comments)} /lastrun: {comments_found_last_run})")
 
                 if (comments_found_last_run == len(comments)):
                     comments_run_same_length = comments_run_same_length + 1
                     if comments_run_same_length > 10:
-                        InstaLogger.logger().error("exit getting comments: " + str(
-                            comments_run_same_length) + "x same length of comments, perhaps endless loop")
+                        InstaLogger.logger().error(f"exit getting comments: {comments_run_same_length} x same length of comments, perhaps endless loop")
                         break
                 else:
                     comments_same_length = 0
@@ -255,12 +243,11 @@ class InstagramPost:
                 comments_found_last_run = len(comments)
             except:
                 InstaLogger.logger().error(
-                    "error clicking - next try (tried: " + str(tried_catch_comments) + ") comments:" + str(
-                        len(comments)) + ")")
+                    f"error clicking - next try (tried: {tried_catch_comments}) comments: {len(comments)}")
                 tried_catch_comments = tried_catch_comments + 1
                 if tried_catch_comments > 10:
                     InstaLogger.logger().error(
-                        "exit getting comments, " + str(tried_catch_comments) + "x tried to get comments")
+                        f"exit getting comments, {tried_catch_comments}x tried to get comments")
                     break
                 sleep(Settings.sleep_time_between_comment_loading)
 

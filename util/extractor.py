@@ -108,6 +108,7 @@ def extract_exact_info(info):
             exact_info = int(exact_info.replace('k', '00').replace('m', '00000'))
         else:
             exact_info = int(exact_info.replace('k', '000').replace('m', '000000'))
+    
     return exact_info
 
 
@@ -214,11 +215,9 @@ def extract_user_posts(browser, num_of_posts_to_do):
         previouslen = 0
         breaking = 0
 
-        InstaLogger.logger().info("number of posts to do: ", num_of_posts_to_do)
+        InstaLogger.logger().info(f"number of posts to do: {num_of_posts_to_do}")
         num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
-        InstaLogger.logger().info("Getting first", num_of_posts_to_scroll,
-              "posts but checking ", num_of_posts_to_do,
-              " posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
+        InstaLogger.logger().info(f"Getting first {num_of_posts_to_scroll} posts but checking {num_of_posts_to_do} posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
         while (len(links2) < num_of_posts_to_do):
 
             prev_divs = browser.find_elements_by_tag_name('main')
@@ -240,14 +239,14 @@ def extract_user_posts(browser, num_of_posts_to_do):
                                 InstaLogger.logger().info("img exception 132")
                                 continue
                     except Exception as err:
-                        InstaLogger.logger().info(err)
+                        InstaLogger.logger().error(err)
 
             for link in links:
                 if "/p/" in link:
                     if (len(links2) < num_of_posts_to_do):
                         links2.append(link)
             links2 = list(set(links2))
-            InstaLogger.logger().info("Scrolling profile ", len(links2), "/", num_of_posts_to_scroll)
+            InstaLogger.logger().info(f"Scrolling profile {len(links2)} / {num_of_posts_to_scroll}")
             body_elem.send_keys(Keys.END)
             sleep(Settings.sleep_time_between_post_scroll)
 
@@ -276,7 +275,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
 
     for postlink in links2:
 
-        InstaLogger.logger().info("\n", counter, "/", len(links2))
+        InstaLogger.logger().info(f"\n {counter} / {len(links2)}")
         counter = counter + 1
 
         try:
@@ -335,7 +334,7 @@ def extract_information(browser, username, limit_amount):
     userinfo = get_user_info(browser, username)
     if limit_amount < 1:
         limit_amount = 999999
-    num_of_posts_to_do = min(limit_amount, userinfo['num_of_posts'])
+    num_of_posts_to_do = min(limit_amount, userinfo['num_of_posts']['count'])
 
 
     prev_divs = browser.find_elements_by_class_name('_70iju')
