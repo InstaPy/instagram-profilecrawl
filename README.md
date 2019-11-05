@@ -47,7 +47,7 @@ Settings.login_password = 'my_password_xxx'
 To run the crawler on Raspberry Pi with Firefox, follow these steps:
 
 1. Install Firefox: `sudo apt-get install firefox-esr`
-2. Get the `geckodriver` as [described here](https://github.com/timgrossmann/InstaPy/blob/master/docs/How_to_Raspberry.md#how-to-update-geckodriver-on-raspbian)
+2. Get the `geckodriver` as [described here](https://www.raspberrypi.org/forums/viewtopic.php?t=167292)
 3. Install `pyvirtualdisplay`: `sudo pip3 install pyvirtualdisplay`
 4. Run the script for RPi: `python3 crawl_profile_pi.py username1 username2 ...`
 
