@@ -23,13 +23,16 @@ class WebDriverException(Exception):
             exception_msg += "Stacktrace:\n%s" % stacktrace
         return exception_msg
 
+
 class PageNotFound404(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
 
+
 class NoInstaProfilePageFound(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
+
 
 class NoInstaPostPageFound(Exception):
     def __init__(self, *args, **kwargs):

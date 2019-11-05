@@ -13,7 +13,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from util.settings import Settings
 from .util import web_adress_navigator
-from util.extractor_posts import extract_post_info
 from util.instalogger import InstaLogger
 from util.exceptions import PageNotFound404, NoInstaProfilePageFound
 
