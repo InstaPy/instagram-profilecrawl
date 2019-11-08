@@ -199,7 +199,7 @@ Settings.log_file_per_run = False
 The script also collects usernames of users who commented on the posts and saves it in ./profiles/{username}_commenters.txt file, sorted by comment frequency.
 
 #### With the help of [Wordcloud](https://github.com/amueller/word_cloud) you could do something like that with your used tags
-![](http://i65.tinypic.com/2nkrrtg.png)
+![](https://cdn-media-1.freecodecamp.org/images/1*_odSGfGjVl36PnL4S5NXRA.png)
 
 <hr />
 
