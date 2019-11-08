@@ -6,13 +6,15 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-certifi = "==2018.10.15"
-chardet = "==3.0.4"
-idna = "==2.7"
-requests = "==2.20.1"
-selenium = "==3.141.0"
-urllib3 = "==1.24.2"
+ipython = "*"
+selenium = "*"
+pyvirtualdisplay = "*"
+arrow = "*"
+gunicorn = "*"
+flask = "*"
+requests = "*"
 ipdb = "*"
+1-6-0 = {git = "https://git@github.com/ping/instagram_private_api.git"}
 
 [requires]
 python_version = "3.7"
