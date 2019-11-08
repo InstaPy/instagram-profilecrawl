@@ -12,10 +12,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from util.settings import Settings
 from .util import web_adress_navigator
-from util.instalogger import InstaLogger
 from util.exceptions import PageNotFound404, NoInstaProfilePageFound
+from util.instalogger import InstaLogger
+from util.settings import Settings
 
 
 def check_cookie(cookie):

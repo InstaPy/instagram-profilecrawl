@@ -15,15 +15,13 @@ class SetupBrowserEnvironment:
     def __init__(self, chrome_options=None, capabilities=None):
         if chrome_options is None:
             chrome_options = Options()
-            chromeOptions = webdriver.ChromeOptions()
-            prefs = {'profile.managed_default_content_settings.images':2, 'disk-cache-size': 4096}
-            chromeOptions.add_experimental_option("prefs", prefs)
+            prefs = {'profile.managed_default_content_settings.images':2, 'disk-cache-size': 4096, 'intl.accept_languages': 'en-US'}
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument("--window-size=1920,1080")
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--headless')
-            chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
+            chrome_options.add_experimental_option('prefs', prefs)
 
         if capabilities is None:
             capabilities = DesiredCapabilities.CHROME
