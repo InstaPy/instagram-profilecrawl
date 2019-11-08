@@ -212,7 +212,7 @@ def extract_followers(browser, username):
     return followers
 
 
-def extract_user_posts(browser, num_of_posts_to_do):
+def get_num_posts(browser, num_of_posts_to_do):
     """Get all posts from user"""
     links = []
     links2 = []
@@ -255,6 +255,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
                 if "/p/" in link:
                     if (len(links2) < num_of_posts_to_do):
                         links2.append(link)
+
             links2 = list(set(links2))
             InstaLogger.logger().info(f"Scrolling profile {len(links2)} / {num_of_posts_to_scroll}")
             body_elem.send_keys(Keys.END)
@@ -275,6 +276,12 @@ def extract_user_posts(browser, num_of_posts_to_do):
 
     except NoSuchElementException as err:
         InstaLogger.logger().error('Something went terribly wrong')
+
+    return links2, preview_imgs
+
+
+def extract_user_posts(browser, num_of_posts_to_do):
+    links2, preview_imgs = get_num_posts(browser, num_of_posts_to_do)
 
     post_infos = []
 
