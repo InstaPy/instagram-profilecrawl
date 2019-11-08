@@ -1,53 +1,76 @@
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import math
+import datetime
+import pickle
+from re import findall
 import sys
 from time import sleep
-from re import findall
-import math
-
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 import requests
-from util.settings import Settings
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 from .util import web_adress_navigator
-from util.extractor_posts import extract_post_info
-import datetime
-from util.instalogger import InstaLogger
 from util.exceptions import PageNotFound404, NoInstaProfilePageFound
+from util.instalogger import InstaLogger
+from util.settings import Settings
+
+
+def check_cookie(cookie):
+    if isinstance(cookie.get('expiry'), float):
+        cookie['expiry'] = int(cookie['expiry'])
+
+    return cookie
 
 
 def login(browser, login_username, login_password):
     login_url = 'https://www.instagram.com/accounts/login/?source=auth_switcher'
     browser.get(login_url)
-    WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "HmktE")))
-    id_input = browser.find_element_by_xpath("//input[@name='username']")
-    id_input.send_keys(login_username)
-    pass_input = browser.find_element_by_xpath("//input[@name='password']")
-    pass_input.send_keys(login_password)
-    pass_input.send_keys(Keys.RETURN)
+    try: 
+        with open(f"./cookies/cookies-{login_username}.pkl", "rb") as cookie_jar:
+            cookies = pickle.load(cookie_jar)
+            for cookie in cookies:
+                cookie = check_cookie(cookie)
+                browser.add_cookie(cookie)
 
-    security_code = explicit_wait(
-        browser, "VOEL", ["AjK3K ", "Class"], 4, False)
-    if security_code:
-        print('Verification Code required')
-        send_security_code(browser)
-    print('security code accepted')
+            print('using cookies')
+    except:
+        login_url = 'https://www.instagram.com/accounts/login/?source=auth_switcher'
+        browser.get(login_url)
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "HmktE")))
+        id_input = browser.find_element_by_xpath("//input[@name='username']")
+        id_input.send_keys(login_username)
+        pass_input = browser.find_element_by_xpath("//input[@name='password']")
+        pass_input.send_keys(login_password)
+        pass_input.send_keys(Keys.RETURN)
 
-    dismiss_notification_offer(browser)
+        security_code = explicit_wait(
+            browser, "VOEL", ["AjK3K ", "Class"], 4, False)
 
-    try:
+        if security_code:
+            print('Verification Code required')
+            send_security_code(browser)
+
+        dismiss_notification_offer(browser)
+
+    from time import sleep; sleep(5)
+    from datetime import datetime; browser.save_screenshot(f'/tmp/screenshots/login-{datetime.now()}.png')
+
+    try: 
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "XrOey")))
-        print('logged in')
-    except Exception as e:
-            print(e, "login failed")
-            sys.exit(1)
+    except:
+        print('login failed')
+        return
+
+    with open(f"./cookies/cookies-{login_username}.pkl", "wb") as cookie_jar:
+        cookies = browser.get_cookies()
+        for cookie in cookies:
+            cookie = check_cookie(cookie)
+        pickle.dump(cookies, cookie_jar)
+
+    print('logged in')
 
 
 def send_security_code(browser):
@@ -102,6 +125,7 @@ def explicit_wait(browser, track, ec_params, timeout=35, notify=True):
     :param browser: webdriver instance
     :param track: short name of the expected condition
     :param ec_params: expected condition specific parameters - [param1, param2]
+    :param timeout: amount of time (in seconds) for browser to wait for element (default: 15s)
     """
     # list of available tracks:
     # <https://seleniumhq.github.io/selenium/docs/api/py/webdriver_support/
