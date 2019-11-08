@@ -333,6 +333,96 @@ def extract_user_posts(browser, num_of_posts_to_do):
     return post_infos, user_commented_total_list
 
 
+def quick_post_extract(browser, num_of_posts_to_do):
+    body_elem = browser.find_element_by_tag_name('body')
+
+    previouslen = 0
+    breaking = 0
+
+    num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
+
+    post_infos = []
+    posts_set = set()
+    posts_set_len = 0
+
+    while (posts_set_len < num_of_posts_to_do):
+        print(posts_set_len)
+
+        JSGetPostsFromReact = """
+            var feed = document.getElementsByTagName('article')[0];
+            var __reactInternalInstanceKey = Object.keys(feed).filter(k=>k.startsWith('__reactInternalInstance'))[0]
+            var posts = feed[__reactInternalInstanceKey].return.stateNode.state.combinedPosts
+            return posts;
+        """
+        posts_json = browser.execute_script(JSGetPostsFromReact)
+
+        for post_json in posts_json:
+            # TODO: Convert to InstagramPost
+            # instagram_post = InstagramPost.from_react_json(post_json)
+            post_code = post_json['code']
+            if post_code in posts_set:
+                continue
+
+            posts_set.add(post_code)
+
+            location = {}
+            if post_json.get('location'):
+                loc_id = post_json['location']['id']
+                loc_slug = post_json['location']['slug']
+            
+                location = {
+                    'location_url': f"https://www.instagram.com/explore/locations/{loc_id}/{loc_slug}/",
+                    'location_name': post_json['location']['name'],
+                    'location_id': loc_id,
+                    'latitude': post_json['location']['lat'],
+                    'longitude': post_json['location']['lng'],
+                }
+
+            num_comments = post_json['numComments']
+            num_likes = post_json.get('numLikes') or post_json.get('numPreviewLikes', -1)
+
+            post_infos.append({
+                'caption': post_json['caption'],
+                'location': location,
+                'imgs': [],
+                'imgdesc': [],
+                'preview_img': post_json['thumbnailResources'],
+                'date': post_json['postedAt'],
+                'tags': [],
+                'likes': {
+                    'count': num_likes,
+                    'list': []
+                },
+                'views': post_json.get('videoViews', -1),
+                'url': f"https://www.instagram.com/p/{post_code}/",
+                'comments': {
+                    'count': num_comments,
+                    'list': []
+                },
+                'mentions': []
+            })
+
+        body_elem.send_keys(Keys.END)
+        sleep(Settings.sleep_time_between_post_scroll)
+
+        posts_set_len = len(posts_set)
+        ##remove below part to never break the scrolling script before reaching the num_of_posts
+        if (posts_set_len == previouslen):
+            breaking += 1
+            InstaLogger.logger().info(f"breaking in {4 - breaking}...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
+        else:
+            breaking = 0
+
+        if breaking > 3:
+            InstaLogger.logger().info("Not getting any more posts, ending scrolling")
+            sleep(2)
+            break
+
+        previouslen = len(post_infos)
+
+    return post_infos, []
+
+
 def extract_information(browser, username, limit_amount):
     """Get all the information for the given username"""
 
@@ -361,7 +451,7 @@ def extract_information(browser, username, limit_amount):
     post_infos = []
     user_commented_total_list = []
     if Settings.scrape_posts_infos is True and isprivate is False:
-        post_infos, user_commented_total_list = extract_user_posts(browser, num_of_posts_to_do)
+        post_infos, user_commented_total_list = quick_post_extract(browser, num_of_posts_to_do)
 
     ig_user.posts = post_infos
     ig_user.scraped = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
