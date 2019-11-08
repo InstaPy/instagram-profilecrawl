@@ -14,9 +14,6 @@ from util.settings import Settings
 Settings.chromedriver_location = '/usr/bin/chromedriver'
 
 with SetupBrowserEnvironment() as browser:
-    if Settings.login_username and Settings.login_password:
-        login(browser, Settings.login_username, Settings.login_password)
-        
     usernames = get_all_user_names()
     for username in usernames:
         print('Extracting information from ' + username)
