@@ -33,6 +33,9 @@ class SetupBrowserEnvironment:
 
     def __enter__(self):
         self.browser = init_chromedriver(self.chrome_options, self.capabilities)
+        if Settings.login_username and Settings.login_password:
+            login(self.browser, Settings.login_username, Settings.login_password)
+        
         return self.browser
 
     def __exit__(self, exc_type, exc_value, traceback):

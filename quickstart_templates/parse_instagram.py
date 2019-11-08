@@ -15,11 +15,9 @@ from util.settings import Settings
 
 Settings.chromedriver_location = '/usr/bin/chromedriver'
 
+
 def get_posts_from_username(username, caption, limit_amount):
     with SetupBrowserEnvironment() as browser:
-        if Settings.login_username and Settings.login_password:
-            login(browser, Settings.login_username, Settings.login_password)
-        
         instagram_stats = []
         ig_stats, _ = extract_information(browser, username, limit_amount)
         now_datetime = arrow.now('US/Pacific')
