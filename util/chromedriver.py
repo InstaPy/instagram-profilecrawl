@@ -9,6 +9,7 @@ from selenium.webdriver import DesiredCapabilities
 from util.exceptions import WebDriverException
 from util.instalogger import InstaLogger
 from util.settings import Settings
+from util.account import login
 
 
 class SetupBrowserEnvironment:

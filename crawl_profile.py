@@ -11,8 +11,6 @@ from util.extractor_posts import InstagramPost
 from util.settings import Settings
 
 
-Settings.chromedriver_location = '/usr/bin/chromedriver'
-
 with SetupBrowserEnvironment() as browser:
     usernames = get_all_user_names()
     for username in usernames:

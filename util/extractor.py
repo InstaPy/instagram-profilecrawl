@@ -86,7 +86,7 @@ class InstagramUser:
             self.followers = {'count' : extract_exact_info(infos[1])}
 
             if Settings.scrape_follower == True:
-                if not isprivate:
+                if not self.isprivate:
                     self.followers['list'] = extract_followers(self.browser, self.username)
 
 
@@ -142,7 +142,7 @@ def extract_followers(browser, username):
 
     # find number of followers
     elem = browser.find_element_by_xpath(
-        "//span[@id='react-root']//header[@class='vtbgv ']//ul[@class='k9GMp ']/child::li[2]/a/span")
+        "//div[@id='react-root']//header[@class='vtbgv ']//ul[@class='k9GMp ']/child::li[2]/a/span")
     elem.click()
     sleep(15)
 
@@ -150,7 +150,7 @@ def extract_followers(browser, username):
     browser.execute_script("document.getElementsByClassName('isgrP')[0].scrollTo(0,500)")
     sleep(10)
 
-    elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate _0imsa ']")
+    elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
     for i in range(12):
         val = elems[i].get_attribute('innerHTML')
         followers.append(val)
@@ -184,7 +184,7 @@ def extract_followers(browser, username):
             if isDone:
                 break
 
-            elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate _0imsa ']")
+            elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
             list_segment = ""
             for i in range(12):
                 val = elems[i].get_attribute('innerHTML')
@@ -203,7 +203,7 @@ def extract_followers(browser, username):
             continue
 
     list_segment = ""
-    elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate _0imsa ']")
+    elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
     for i in range(len(elems)):
         val = elems[i].get_attribute('innerHTML')
         list_segment += (val + '\n')
