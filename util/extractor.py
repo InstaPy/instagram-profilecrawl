@@ -45,13 +45,18 @@ class InstagramUser:
         return isprivate
 
     def _user_alias(self):
-        alias = self.container.find_element_by_class_name('-vDIg').find_element_by_tag_name('h1').text
-
-        return alias
+        try:
+            alias = self.container.find_element_by_class_name('-vDIg').find_element_by_tag_name('h1').text
+            return alias
+        except NoSuchElementException:
+            return self.alias
 
     def _user_bio(self):
-        bio = self.container.find_element_by_class_name('-vDIg').find_element_by_tag_name('span').text
-        return bio
+        try:
+            bio = self.container.find_element_by_class_name('-vDIg').find_element_by_tag_name('span').text
+            return bio
+        except NoSuchElementException:
+            return self.bio
 
     def _user_bio_url(self):
         try:
