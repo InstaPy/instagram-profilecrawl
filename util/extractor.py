@@ -312,7 +312,7 @@ def extract_user_posts(browser, num_of_posts_to_do):
             }
 
             post_infos.append({
-                'caption': instagram_post.caption,
+                'caption': instagram_post.get('caption', 'None'),
                 'location': location,
                 'imgs': instagram_post.imgs,
                 'imgdesc': instagram_post.imgdesc,
@@ -387,7 +387,7 @@ def quick_post_extract(browser, num_of_posts_to_do):
             num_likes = post_json.get('numLikes') or post_json.get('numPreviewLikes', -1)
 
             post_infos.append({
-                'caption': post_json['caption'],
+                'caption': post_json.get('caption', 'None'),
                 'location': location,
                 'imgs': [],
                 'imgdesc': [],

@@ -1,5 +1,6 @@
 import os
 from sys import platform as p_os
+from config import IG_USERNAME, IG_PASSWORD
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,7 +16,7 @@ class Settings:
     scrape_posts_likers = False
     scrape_follower = False
     output_comments = False
-    sleep_time_between_post_scroll = 1.5
+    sleep_time_between_post_scroll = 14.5
     sleep_time_between_comment_loading = 1.5
     mentions = True
 
@@ -28,8 +29,8 @@ class Settings:
     # Set a logger cache outside object to avoid re-instantiation issues
     loggers = {}
 
-    login_username = ''
-    login_password = ''
+    login_username = IG_USERNAME
+    login_password = IG_PASSWORD
 
     #chromedriver
     chromedriver_min_version = 2.36
