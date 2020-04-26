@@ -25,6 +25,10 @@ Now you can start using it following this example:
 python3.7 crawl_profile.py username1 username2 ... usernameX
 ```
 
+## Download The Images Posts to your local  
+```bash
+python3.7 extract_image.py <colected_profiles_path>
+```
 **Settings:**
 To limit the amount of posts to be analyzed, change variable limit_amount in settings.py. Default value is 12000.
 
