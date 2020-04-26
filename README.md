@@ -17,6 +17,18 @@ It uses selenium and requests to get all the information so install them with:
 pip install -r requirements.txt
 ```
 
+Copy the `.env.example` to `.env`  
+```bash
+cp .env.example .env
+```
+
+Modify your IG profile inside `.env`   
+```
+IG_USERNAME=<Your Instagram Username>
+IG_PASSWORD=<Your Instagram Password>
+```
+
+
 Install the proper `chromedriver` for your operating system.  Once you [download it](https://sites.google.com/a/chromium.org/chromedriver/downloads) just drag and drop it into `instagram-profilecrawl/assets` directory.
 
 ## Use it!
