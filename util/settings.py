@@ -1,9 +1,9 @@
 import os
 from sys import platform as p_os
-from config import IG_USERNAME, IG_PASSWORD
+from config import ROOT_DIR, IG_USERNAME, IG_PASSWORD
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = ROOT_DIR
 OS_ENV = "windows" if p_os == "win32" else "osx" if p_os == "darwin" else "linux"
 
 class Settings:
