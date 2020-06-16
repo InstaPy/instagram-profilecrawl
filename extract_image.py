@@ -6,23 +6,23 @@ import json
 from config import ROOT_DIR
 
 
-def main(args):
-    profiles_path = args[1] if len(args) > 1 else "profiles"
-    
+def main(arguments):
+    profiles_path = arguments[1] if len(arguments) > 1 else "profiles"
+
     profile_list = os.listdir(profiles_path)
 
     for profile in profile_list:
         file_path = os.path.join(ROOT_DIR, profiles_path, profile)
         file_name, file_extension = os.path.splitext(file_path)
-        print(file_extension)
-        if file_extension == ".json": # check file is json
+        if file_extension == ".json":  # check file is json
             f = open(file_path, "r")
             data = json.loads(f.read())
             if data is not None or data is not []:
                 username = data.get("username", "")
                 if data.get("posts") is not None:
 
-                    images = [val for post in data.get("posts", []) for (key, val) in post.items() if key == "preview_img"]
+                    images = [val for post in data.get("posts", []) for (key, val) in post.items() if
+                              key == "preview_img"]
                     image_downloader = DownloadImagePost('images/{}'.format(username))
                     for img in images:
                         # TODO: Implement download Image URL here
@@ -31,8 +31,7 @@ def main(args):
                     print("This user doesn't have any post(s) yet.")
 
         else:
-            print("Unsuported file type")
-    
+            print("Unsupported file type")
 
 
 if __name__ == "__main__":

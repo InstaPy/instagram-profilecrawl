@@ -24,8 +24,8 @@ class InstagramUser:
         self.browser = browser
         self.username = username
         self.num_of_posts = {'count': 0}
-        self.followers = {'count' : 0}
-        self.following = {'count' : 0}
+        self.followers = {'count': 0}
+        self.following = {'count': 0}
         self.profile_image = ""
         self.bio = ""
         self.bio_url = ""
@@ -65,7 +65,6 @@ class InstagramUser:
         except NoSuchElementException:
             return self.bio_url
 
-
     def _user_profile_image(self):
         try:
             img_container = self.browser.find_element_by_class_name('RR-M-')
@@ -74,10 +73,9 @@ class InstagramUser:
         except NoSuchElementException:
             return self.profile_image
 
-
     def get_user_info(self):
         """Get the basic user info from the profile screen"""
-        
+
         self.isprivate = self._is_user_private()
         self.alias = self._user_alias()
         self.bio = self._user_bio()
@@ -87,13 +85,12 @@ class InstagramUser:
         infos = self.container.find_elements_by_class_name('Y8-fY')
         if infos:
             self.num_of_posts = {'count': extract_exact_info(infos[0])}
-            self.following = {'count' : extract_exact_info(infos[2])}
-            self.followers = {'count' : extract_exact_info(infos[1])}
+            self.following = {'count': extract_exact_info(infos[2])}
+            self.followers = {'count': extract_exact_info(infos[1])}
 
             if Settings.scrape_follower == True:
                 if not self.isprivate:
                     self.followers['list'] = extract_followers(self.browser, self.username)
-
 
         InstaLogger.logger().info("Alias name: " + self.alias)
         InstaLogger.logger().info("Bio: " + self.bio)
@@ -109,7 +106,7 @@ class InstagramUser:
         output['num_of_posts'] = self.num_of_posts
         output['followers'] = self.followers
         output['following'] = self.following
-        output['profile_image'] =self.profile_image
+        output['profile_image'] = self.profile_image
         output['bio'] = self.bio
         output['bio_url'] = self.bio_url
         output['alias'] = self.alias
@@ -130,7 +127,7 @@ def extract_exact_info(info):
             exact_info = int(exact_info.replace('k', '00').replace('m', '00000'))
         else:
             exact_info = int(exact_info.replace('k', '000').replace('m', '000000'))
-    
+
     return exact_info
 
 
@@ -189,7 +186,8 @@ def extract_followers(browser, username):
             if isDone:
                 break
 
-            elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
+            elems = browser.find_elements_by_xpath(
+                "//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
             list_segment = ""
             for i in range(12):
                 val = elems[i].get_attribute('innerHTML')
@@ -239,7 +237,8 @@ def get_num_posts(browser, num_of_posts_to_do):
 
         InstaLogger.logger().info(f"number of posts to do: {num_of_posts_to_do}")
         num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
-        InstaLogger.logger().info(f"Getting first {num_of_posts_to_scroll} posts but checking {num_of_posts_to_do} posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
+        InstaLogger.logger().info(
+            f"Getting first {num_of_posts_to_scroll} posts but checking {num_of_posts_to_do} posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
         while (len(links2) < num_of_posts_to_do):
 
             prev_divs = browser.find_elements_by_tag_name('main')
@@ -269,7 +268,8 @@ def get_num_posts(browser, num_of_posts_to_do):
             ##remove bellow part to never break the scrolling script before reaching the num_of_posts
             if (len(links2) == previouslen):
                 breaking += 1
-                InstaLogger.logger().info(f"breaking in {4 - breaking}...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
+                InstaLogger.logger().info(
+                    f"breaking in {4 - breaking}...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
             else:
                 breaking = 0
             if breaking > 3:
@@ -374,7 +374,7 @@ def quick_post_extract(browser, num_of_posts_to_do):
             if post_json.get('location'):
                 loc_id = post_json['location']['id']
                 loc_slug = post_json['location']['slug']
-            
+
                 location = {
                     'location_url': f"https://www.instagram.com/explore/locations/{loc_id}/{loc_slug}/",
                     'location_name': post_json['location']['name'],
@@ -414,7 +414,8 @@ def quick_post_extract(browser, num_of_posts_to_do):
         ##remove below part to never break the scrolling script before reaching the num_of_posts
         if (posts_set_len == previouslen):
             breaking += 1
-            InstaLogger.logger().info(f"breaking in {4 - breaking}...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
+            InstaLogger.logger().info(
+                f"breaking in {4 - breaking}...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
         else:
             breaking = 0
 
@@ -449,7 +450,6 @@ def extract_information(browser, username, limit_amount):
         limit_amount = 999999
 
     num_of_posts_to_do = min(limit_amount, ig_user.num_of_posts['count'])
-
 
     prev_divs = browser.find_elements_by_class_name('_70iju')
 

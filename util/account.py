@@ -7,6 +7,7 @@ from time import sleep
 
 import requests
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -28,7 +29,7 @@ def check_cookie(cookie):
 def login(browser, login_username, login_password):
     login_url = 'https://www.instagram.com/accounts/login/?source=auth_switcher'
     browser.get(login_url)
-    try: 
+    try:
         with open(f"./cookies/cookies-{login_username}.pkl", "rb") as cookie_jar:
             cookies = pickle.load(cookie_jar)
             for cookie in cookies:
@@ -55,10 +56,12 @@ def login(browser, login_username, login_password):
 
         dismiss_notification_offer(browser)
 
-    from time import sleep; sleep(5)
-    from datetime import datetime; browser.save_screenshot(f'/tmp/screenshots/login-{datetime.now()}.png')
+    from time import sleep;
+    sleep(5)
+    from datetime import datetime;
+    browser.save_screenshot(f'/tmp/screenshots/login-{datetime.now()}.png')
 
-    try: 
+    try:
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "XrOey")))
     except:
         print('login failed')

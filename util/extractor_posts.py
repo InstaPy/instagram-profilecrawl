@@ -66,7 +66,8 @@ class InstagramPost:
             else:
                 try:
                     views = int(
-                        self.post.find_element_by_xpath('//article/div[2]/section[2]/div/span/span').text.replace(",", ""))
+                        self.post.find_element_by_xpath('//article/div[2]/section[2]/div/span/span').text.replace(",",
+                                                                                                                  ""))
                     InstaLogger.logger().info("video views: " + str(views))
                 except:
                     InstaLogger.logger().error("ERROR - Getting Video Views")
@@ -91,7 +92,7 @@ class InstagramPost:
             likes = -1
 
         return likes, views
-    
+
     def extract_username(self):
         username = ''
 
@@ -215,13 +216,13 @@ class InstagramPost:
     def load_more_comments(self, comments):
         tried_catch_comments = 0
 
-        while (comments[1].text.lower() == 'load more comments' or 
+        while (comments[1].text.lower() == 'load more comments' or
                comments[1].text.lower().startswith('view all')):
             try:
                 if comments[1].find_element_by_tag_name('button'):
                     InstaLogger.logger().info("clicking button for loading more comments")
                     self.browser.execute_script("arguments[0].click();",
-                                           comments[1].find_element_by_tag_name('button'))
+                                                comments[1].find_element_by_tag_name('button'))
                 elif comments[1].find_element_by_tag_name('a'):
                     InstaLogger.logger().info("clicking a for loading more")
                     self.browser.execute_script("arguments[0].click();", comments[1].find_element_by_tag_name('a'))
@@ -235,7 +236,8 @@ class InstagramPost:
                 if (comments_found_last_run == len(comments)):
                     comments_run_same_length = comments_run_same_length + 1
                     if comments_run_same_length > 10:
-                        InstaLogger.logger().error(f"exit getting comments: {comments_run_same_length} x same length of comments, perhaps endless loop")
+                        InstaLogger.logger().error(
+                            f"exit getting comments: {comments_run_same_length} x same length of comments, perhaps endless loop")
                         break
                 else:
                     comments_same_length = 0
@@ -319,7 +321,8 @@ class InstagramPost:
                     div_likebox_elem = self.browser.find_element_by_xpath(
                         "//div[contains(@class, 'i0EQd')]/div/div/div[1]")
                     self.browser.execute_script("arguments[0].scrollIntoView(true);", div_likebox_elem)
-                    InstaLogger.logger().info("error on scrolling - next try (tried: " + str(tried_catch_likers) + ") Message:" + e)
+                    InstaLogger.logger().info(
+                        "error on scrolling - next try (tried: " + str(tried_catch_likers) + ") Message:" + e)
 
                 sleep(Settings.sleep_time_between_post_scroll)
 
@@ -340,8 +343,9 @@ class InstagramPost:
                     self.browser.execute_script("arguments[0].scrollIntoView(true);", div_likebox_elem)
 
                 if tried_catch_likers > 10:
-                    InstaLogger.logger().error("exit scrolling likers " + str(tried_catch_likers) + "x tries - liker list: " + str(
-                        len(user_liked_list)) + " should be " + str(likes) + "")
+                    InstaLogger.logger().error(
+                        "exit scrolling likers " + str(tried_catch_likers) + "x tries - liker list: " + str(
+                            len(user_liked_list)) + " should be " + str(likes) + "")
                     break
                 likers_list_before = len(user_liked_list)
 

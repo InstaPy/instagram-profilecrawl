@@ -14,7 +14,7 @@ class InstaLogger:
 
     @classmethod
     def logger(self):
-        return self.get_logger(self, Settings.log_output_toconsole)
+        return self.get_logger(Settings.log_output_toconsole)
 
     def set_logfolder(self):
         self.logfolder = Settings.log_location + os.path.sep
@@ -38,12 +38,12 @@ class InstaLogger:
             return existing_logger
         else:
             # print('logger catch new one')
-            self.set_logfolder(self)
+            self.set_logfolder()
             # initialize and setup logging system
             logger = logging.getLogger(__name__)
             logger.setLevel(logging.DEBUG)
 
-            logfile = self.set_logfile(self)
+            logfile = self.set_logfile()
             file_handler = logging.FileHandler(logfile, encoding='UTF-8')
 
             file_handler.setLevel(logging.DEBUG)
@@ -51,7 +51,7 @@ class InstaLogger:
             file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
 
-            if show_logs == True:
+            if show_logs:
                 console_handler = logging.StreamHandler()
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(logger_formatter)

@@ -2,9 +2,9 @@ import os
 from sys import platform as p_os
 from config import ROOT_DIR, IG_USERNAME, IG_PASSWORD
 
-
 BASE_DIR = ROOT_DIR
 OS_ENV = "windows" if p_os == "win32" else "osx" if p_os == "darwin" else "linux"
+
 
 class Settings:
     profile_location = os.path.join(BASE_DIR, 'profiles')
@@ -25,14 +25,14 @@ class Settings:
     log_file_per_run = False
     log_location = os.path.join(BASE_DIR, 'logs')
 
-    #from Instpy
+    # from Instpy
     # Set a logger cache outside object to avoid re-instantiation issues
     loggers = {}
 
     login_username = IG_USERNAME
     login_password = IG_PASSWORD
 
-    #chromedriver
+    # chromedriver
     chromedriver_min_version = 2.36
     specific_chromedriver = f"chromedriver_{OS_ENV}"
     chromedriver_location = os.path.join(BASE_DIR, "assets", specific_chromedriver)

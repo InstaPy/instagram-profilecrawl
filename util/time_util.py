@@ -21,15 +21,15 @@ def randomize_time(mean):
 
 def set_sleep_percentage(percentage):
     global sleep_percentage
-    sleep_percentage = percentage/100
+    sleep_percentage = percentage / 100
 
 
 def sleep(t, custom_percentage=None):
     if custom_percentage is None:
         custom_percentage = sleep_percentage
-    time = randomize_time(t)*custom_percentage
+    time = randomize_time(t) * custom_percentage
     original_sleep(time)
 
 
 def sleep_actual(t):
-  original_sleep(t)
+    original_sleep(t)
