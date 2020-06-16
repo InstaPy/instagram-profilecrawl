@@ -1,6 +1,8 @@
-certifi==2018.10.15
+# certifi==2018.10.15
 chardet==3.0.4
 idna==2.7
+python-dotenv==0.12.0
 requests==2.20.1
 selenium==3.141.0
 urllib3==1.24.2
+wget==3.2

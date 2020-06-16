@@ -4,6 +4,7 @@ from util.instalogger import InstaLogger
 Exceptions that may happen in all the webdriver code.
 """
 
+
 class WebDriverException(Exception):
     """
     Base webdriver exception.

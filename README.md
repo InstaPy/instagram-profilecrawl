@@ -17,6 +17,18 @@ It uses selenium and requests to get all the information so install them with:
 pip install -r requirements.txt
 ```
 
+Copy the `.env.example` to `.env`  
+```bash
+cp .env.example .env
+```
+
+Modify your IG profile inside `.env`   
+```
+IG_USERNAME=<Your Instagram Username>
+IG_PASSWORD=<Your Instagram Password>
+```
+
+
 Install the proper `chromedriver` for your operating system.  Once you [download it](https://sites.google.com/a/chromium.org/chromedriver/downloads) just drag and drop it into `instagram-profilecrawl/assets` directory.
 
 ## Use it!
@@ -25,6 +37,10 @@ Now you can start using it following this example:
 python3.7 crawl_profile.py username1 username2 ... usernameX
 ```
 
+## Download The Images Posts to your local  
+```bash
+python3.7 extract_image.py <colected_profiles_path>
+```
 **Settings:**
 To limit the amount of posts to be analyzed, change variable limit_amount in settings.py. Default value is 12000.
 
