@@ -56,9 +56,9 @@ def login(browser, login_username, login_password):
 
         dismiss_notification_offer(browser)
 
-    from time import sleep;
+    from time import sleep
     sleep(5)
-    from datetime import datetime;
+    from datetime import datetime
     browser.save_screenshot(f'/tmp/screenshots/login-{datetime.now()}.png')
 
     try:

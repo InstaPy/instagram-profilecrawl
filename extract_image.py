@@ -3,7 +3,7 @@ import os
 import wget
 from util.download_image_post import DownloadImagePost
 import json
-from config import ROOT_DIR
+from util.settings import BASE_DIR
 
 
 def main(arguments):
@@ -12,7 +12,7 @@ def main(arguments):
     profile_list = os.listdir(profiles_path)
 
     for profile in profile_list:
-        file_path = os.path.join(ROOT_DIR, profiles_path, profile)
+        file_path = os.path.join(BASE_DIR, profiles_path, profile)
         file_name, file_extension = os.path.splitext(file_path)
         if file_extension == ".json":  # check file is json
             f = open(file_path, "r")

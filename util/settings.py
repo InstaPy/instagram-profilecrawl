@@ -1,8 +1,16 @@
 import os
 from sys import platform as p_os
-from config import ROOT_DIR, IG_USERNAME, IG_PASSWORD
+from os.path import abspath, dirname, join
+from os import getenv
+from dotenv import load_dotenv
 
-BASE_DIR = ROOT_DIR
+# ROOT_DIR = abspath(dirname(__file__))
+BASE_DIR = abspath(dirname(__file__))
+dotenv_path = join(BASE_DIR, '.env')
+load_dotenv(dotenv_path)
+IG_USERNAME = getenv("IG_USERNAME", "")
+IG_PASSWORD = getenv("IG_PASSWORD", "")
+
 OS_ENV = "windows" if p_os == "win32" else "osx" if p_os == "darwin" else "linux"
 
 
@@ -23,7 +31,7 @@ class Settings:
     log_output_toconsole = True
     log_output_tofile = True
     log_file_per_run = False
-    log_location = os.path.join(BASE_DIR, 'logs')
+    log_location = join(BASE_DIR, 'logs')
 
     # from Instpy
     # Set a logger cache outside object to avoid re-instantiation issues
