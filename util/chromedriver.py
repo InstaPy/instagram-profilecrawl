@@ -5,6 +5,7 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from webdriver_manager.chrome import ChromeDriverManager
 
 from util.exceptions import WebDriverException
 from util.instalogger import InstaLogger
@@ -46,9 +47,10 @@ def init_chromedriver(chrome_options, capabilities):
     chromedriver_location = Settings.chromedriver_location
 
     try:
-        browser = webdriver.Chrome(chromedriver_location,
-                                                desired_capabilities=capabilities,
-                                                chrome_options=chrome_options)
+        # browser = webdriver.Chrome(chromedriver_location,
+        #                                         desired_capabilities=capabilities,
+        #                                         chrome_options=chrome_options)
+        browser = webdriver.Chrome(ChromeDriverManager().install())
     except WebDriverException as exc:
         InstaLogger.logger().error('ensure chromedriver is installed at {}'.format(
             Settings.chromedriver_location))

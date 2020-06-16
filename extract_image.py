@@ -7,13 +7,15 @@ from config import ROOT_DIR
 
 
 def main(args):
-    profiles_path = args[1] if args[1] is not None else "profiles"
+    profiles_path = args[1] if len(args) > 1 else "profiles"
+    
     profile_list = os.listdir(profiles_path)
 
     for profile in profile_list:
         file_path = os.path.join(ROOT_DIR, profiles_path, profile)
-
-        if os.path.splitext(file_path)[1] == "json": # check file is json
+        file_name, file_extension = os.path.splitext(file_path)
+        print(file_extension)
+        if file_extension == ".json": # check file is json
             f = open(file_path, "r")
             data = json.loads(f.read())
             if data is not None or data is not []:
