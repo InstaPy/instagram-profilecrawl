@@ -6,6 +6,8 @@
 Automation Script for crawling information from ones instagram profile.  
 Like e.g. the number of posts, followers, and the tags of the the posts
 
+**Guide to Bot Creation: [Learn to Build your own Bots and Automations with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
+
 #### Getting started
 Just do:
 ```bash
