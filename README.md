@@ -14,7 +14,7 @@ Just do:
 git clone https://github.com/timgrossmann/instagram-profilecrawl.git
 ```
 
-It uses selenium and requests to get all the information so install them with:
+It uses selenium and requests to get all the information so install them using:
 ```bash
 pip install -r requirements.txt
 ```
