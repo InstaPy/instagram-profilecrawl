@@ -6,3 +6,4 @@ requests==2.20.1
 selenium==3.141.0
 urllib3==1.24.2
 wget==3.2
+webdriver_manager
