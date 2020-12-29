@@ -5,19 +5,13 @@ import time
 from .settings import Settings
 
 
-class InstaLogger:
-    logfolder = ''
-    loggerobj = None
+class Logger:
 
     def __init__(self):
-        print('init log')
-
-    @classmethod
-    def logger(self):
-        return self.get_logger(Settings.log_output_toconsole)
+        self.logfolder = Settings.log_location + os.path.sep
+        self.loggerobj = self.get_logger(Settings.log_output_toconsole)
 
     def set_logfolder(self):
-        self.logfolder = Settings.log_location + os.path.sep
         if not os.path.exists(self.logfolder):
             os.makedirs(self.logfolder)
 
@@ -57,10 +51,16 @@ class InstaLogger:
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
 
-            # logger = logging.LoggerAdapter(logger)
-
             Settings.loggers[__name__] = logger
             Settings.logger = logger
-            self.loggerobj = logger
-            # self.get_logger(Settings.log_output_toconsole)
-            return self.loggerobj
+            return logger
+
+
+class InstaLogger:
+
+    def __init__(self):
+        print('init log')
+
+    @staticmethod
+    def logger():
+        return Logger().loggerobj

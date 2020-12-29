@@ -18,8 +18,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
-from util.exceptions import PageNotFound404
-from util.instalogger import InstaLogger
+from .exceptions import PageNotFound404
+from .instalogger import InstaLogger
 
 
 def web_adress_navigator(browser, link):
