@@ -3,20 +3,21 @@ import os
 from util.download_image_post import DownloadImagePost
 import json
 from util.instalogger import InstaLogger
-from util.settings import BASE_DIR
+from util.settings import BASE_DIR, Settings
+
+logger = InstaLogger.logger()
 
 
 def main(arguments):
-    default_profiles_path = os.path.join(BASE_DIR, "profiles")
-    profiles_path = arguments[1] if len(arguments) > 1 else default_profiles_path
+    profiles_path = arguments[1] if len(arguments) > 1 else Settings.profile_location
     abs_profiles_path = os.path.join(BASE_DIR, profiles_path)
     if not os.path.exists(abs_profiles_path):
-        InstaLogger.logger().error(f"Directory ('{abs_profiles_path}') couldn't found!")
+        logger.error(f"Directory ('{abs_profiles_path}') couldn't found!")
         return
 
     profile_list = os.listdir(abs_profiles_path)
     if not profile_list:
-        InstaLogger.logger().error(f"Directory ('{profile_list}') is empty!")
+        logger.error(f"Directory ('{profile_list}') is empty!")
         return
 
     for profile in profile_list:
