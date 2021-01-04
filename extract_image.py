@@ -1,22 +1,30 @@
 import sys
 import os
-import wget
 from util.download_image_post import DownloadImagePost
 import json
+from util.instalogger import InstaLogger
 from util.settings import BASE_DIR
 
 
 def main(arguments):
-    profiles_path = arguments[1] if len(arguments) > 1 else "profiles"
+    default_profiles_path = os.path.join(BASE_DIR, "profiles")
+    profiles_path = arguments[1] if len(arguments) > 1 else default_profiles_path
+    abs_profiles_path = os.path.join(BASE_DIR, profiles_path)
+    if not os.path.exists(abs_profiles_path):
+        InstaLogger.logger().error(f"Directory ('{abs_profiles_path}') couldn't found!")
+        return
 
-    profile_list = os.listdir(profiles_path)
+    profile_list = os.listdir(abs_profiles_path)
+    if not profile_list:
+        InstaLogger.logger().error(f"Directory ('{profile_list}') is empty!")
+        return
 
     for profile in profile_list:
-        file_path = os.path.join(BASE_DIR, profiles_path, profile)
+        file_path = os.path.join(abs_profiles_path, profile)
         file_name, file_extension = os.path.splitext(file_path)
         if file_extension == ".json":  # check file is json
-            f = open(file_path, "r")
-            data = json.loads(f.read())
+            with open(file_path, "r") as f:
+                data = json.loads(f.read())
             if data is not None or data is not []:
                 username = data.get("username", "")
                 if data.get("posts") is not None:
