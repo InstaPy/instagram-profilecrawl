@@ -23,6 +23,7 @@ class Settings:
     scrape_posts_infos = True
     scrape_posts_likers = False
     scrape_follower = False
+    scrape_following = False
     output_comments = False
     sleep_time_between_post_scroll = 14.5
     sleep_time_between_comment_loading = 1.5

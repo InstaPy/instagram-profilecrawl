@@ -85,12 +85,16 @@ class InstagramUser:
         infos = self.container.find_elements_by_class_name('Y8-fY')
         if infos:
             self.num_of_posts = {'count': extract_exact_info(infos[0])}
-            self.following = {'count': extract_exact_info(infos[2])}
             self.followers = {'count': extract_exact_info(infos[1])}
+            self.following = {'count': extract_exact_info(infos[2])}
 
             if Settings.scrape_follower == True:
                 if not self.isprivate:
                     self.followers['list'] = extract_followers(self.browser, self.username)
+
+            if Settings.scrape_following == True:
+                if not self.isprivate:
+                    self.following['list'] = extract_following(self.browser, self.username)
 
         InstaLogger.logger().info("Alias name: " + self.alias)
         InstaLogger.logger().info("Bio: " + self.bio)
@@ -214,6 +218,88 @@ def extract_followers(browser, username):
 
     return followers
 
+def extract_following(browser, username):
+    InstaLogger.logger().info('Extracting follower from ' + username)
+    try:
+        user_link = "https://www.instagram.com/{}".format(username)
+        web_adress_navigator(browser, user_link)
+    except PageNotFound404 as e:
+        raise NoInstaProfilePageFound(e)
+    sleep(5)
+
+    followers = []
+
+    # find number of followers
+    elem = browser.find_element_by_xpath(
+        "//div[@id='react-root']//header[@class='vtbgv ']//ul[@class='k9GMp ']/child::li[3]/a/span")
+    elem.click()
+    sleep(15)
+
+    # remove suggestion list and load 24 list elements after this
+    browser.execute_script("document.getElementsByClassName('isgrP')[0].scrollTo(0,500)")
+    sleep(10)
+
+    elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
+    for i in range(12):
+        val = elems[i].get_attribute('innerHTML')
+        followers.append(val)
+
+    for i in range(12):
+        browser.execute_script("document.getElementsByClassName('PZuss')[0].children[0].remove()")
+
+    isDone = False
+
+    while 1:
+        try:
+
+            start = time()
+            browser.execute_script(
+                "document.getElementsByClassName('isgrP')[0].scrollTo(0,document.getElementsByClassName('isgrP')[0].scrollHeight)")
+
+            while 1:
+                try:
+                    if int(browser.execute_script(
+                            "return document.getElementsByClassName('PZuss')[0].children.length")) == 24:
+                        break
+                except (KeyboardInterrupt, SystemExit):
+                    # f.close()
+                    raise
+                except:
+                    continue
+                if time() - start > 10:
+                    isDone = True
+                    break
+
+            if isDone:
+                break
+
+            elems = browser.find_elements_by_xpath(
+                "//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
+            list_segment = ""
+            for i in range(12):
+                val = elems[i].get_attribute('innerHTML')
+                list_segment += (val + '\n')
+                followers.append(val)
+
+            for i in range(12):
+                browser.execute_script("document.getElementsByClassName('PZuss')[0].children[0].remove()")
+
+            InstaLogger.logger().info(time() - start)
+
+        except (KeyboardInterrupt, SystemExit):
+            # f.close()
+            raise
+        except:
+            continue
+
+    list_segment = ""
+    elems = browser.find_elements_by_xpath("//body//div[@class='PZuss']//a[@class='FPmhX notranslate  _0imsa ']")
+    for i in range(len(elems)):
+        val = elems[i].get_attribute('innerHTML')
+        list_segment += (val + '\n')
+        followers.append(val)
+
+    return followers
 
 def get_num_posts(browser, num_of_posts_to_do):
     """Get all posts from user"""
