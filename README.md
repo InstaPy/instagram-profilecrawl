@@ -91,13 +91,13 @@ Should the profile json file should get a timestamp
 ```python
 Settings.profile_file_with_timestamp = True
 ```
-Path to the save the commentors:
+Path to the save the commenters:
 ```python
-Settings.profile_commentors_location = os.path.join(BASE_DIR, 'profiles')
+Settings.profile_commenters_location = os.path.join(BASE_DIR, 'profiles')
 ```
-Should the commentors file should get a timestamp
+Should the commenters file should get a timestamp
 ```python
-Settings.profile_commentors_file_with_timestamp = True
+Settings.profile_commenters_file_with_timestamp = True
 ```
 
 Scrape & save the posts json
