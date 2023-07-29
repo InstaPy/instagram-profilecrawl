@@ -47,7 +47,7 @@ python3.7 extract_image.py <colected_profiles_path>
 To limit the amount of posts to be analyzed, change variable limit_amount in settings.py. Default value is 12000.
 
 ### Optional login
-If you want to access **more features** (such as private accounts which you followed with yours will be accessible) you must enter your username and password in settings.py. Remember, it's optional.
+If you want to access **more features** (such as private accounts which you followed with yours will be accessible) you must enter your username and password in setting.py. Remember, it's optional.
 
 Here are the steps to do so:
 1. Open Settings.py
