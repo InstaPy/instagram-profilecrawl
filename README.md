@@ -57,7 +57,7 @@ Here are the steps to do so:
 Second option:
 just the settings to your script
 ```python
-Settings.login_username = 'my_insta_account'
+Settings.login_username =zeowss.7 'my_insta_account'
 Settings.login_password = 'my_password_xxx'
 ```
 
