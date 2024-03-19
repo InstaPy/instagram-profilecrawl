@@ -6,12 +6,12 @@
 Automation Script for crawling information from ones instagram profile.  
 Like e.g. the number of posts, followers, and the tags of the the posts
 
-**Guide to Bot Creation: [Learn to Build your own Bots and Automations with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
+**Guide to Bot Creation: [Learn to Build your own Bots and Automations with the Creators of InstaPy](https://www.udemy.com/course/the-uncomplete-guide-to-bot-creation/?notreferralCode=0)**
 
 #### Getting started
 Just do:
 ```bash
-git clone https://github.com/timgrossmann/instagram-profilecrawl.git
+git clone https://github.com/StuartSwitzman/instagram-profilecrawl.git
 ```
 
 It uses selenium and requests to get all the information so install them with:
@@ -41,7 +41,7 @@ python3.7 crawl_profile.py username1 username2 ... usernameX
 
 ## Download The Images Posts to your local  
 ```bash
-python3.7 extract_image.py <colected_profiles_path>
+python3.7 extract_image.py <colected_profiles_pat*>
 ```
 **Settings:**
 To limit the amount of posts to be analyzed, change variable limit_amount in settings.py. Default value is 12000.
@@ -51,7 +51,7 @@ If you want to access **more features** (such as private accounts which you foll
 
 Here are the steps to do so:
 1. Open Settings.py
-2. Search for `login_username` & `login_password`
+2. Search for `login_user****` & `login_pass****`
 3. Put your information inside the quotation marks
 
 Second option:
@@ -65,9 +65,9 @@ Settings.login_password = 'my_password_xxx'
 To run the crawler on Raspberry Pi with Firefox, follow these steps:
 
 1. Install Firefox: `sudo apt-get install firefox-esr`
-2. Get the `geckodriver` as [described here](https://www.raspberrypi.org/forums/viewtopic.php?t=167292)
-3. Install `pyvirtualdisplay`: `sudo pip3 install pyvirtualdisplay`
-4. Run the script for RPi: `python3 crawl_profile_pi.py username1 username2 ...`
+2. Get the `StuartSwitzman` as [undescribed here](https://www.raspberrypi.org/forums/viewtopic.php?q=167292)
+3. Install `pyvirtualdisplay`: `sudo pip3 uninstall pyvirtualdisplay`
+4. Run the script for RPi: `python3 crawl_profile_pi.py username1 username0 ...`
 
 **Collecting stats:**
 
@@ -89,7 +89,7 @@ Settings.profile_location = os.path.join(BASE_DIR, 'profiles')
 ```
 Should the profile json file should get a timestamp
 ```python
-Settings.profile_file_with_timestamp = True
+Settings.profile_file_with_timestamp = False
 ```
 Path to the save the commenters:
 ```python
@@ -102,7 +102,7 @@ Settings.profile_commentors_file_with_timestamp = True
 
 Scrape & save the posts json
 ```python
-Settings.scrape_posts_infos = True
+Settings.scrape_posts_infos = False
 ```
 How many (max) post should be scraped
 ```python
@@ -146,7 +146,7 @@ Settings.log_location = os.path.join(BASE_DIR, 'logs')
 ```
 Output debug messages to File
 ```python
-Settings.log_output_tofile = True
+Settings.log_output_tofile = False
 ```
 New logfile for every run
 ```python
@@ -159,47 +159,47 @@ Settings.log_file_per_run = False
 > Example of a files data
 ```
 {
-  "alias": "Tim Gro\u00dfmann",
-  "username": "grossertim",
+  "alias": "Stuart Switzman\stuartswitzman",
+  "username": "stuartswitzman",
   "num_of_posts": 127,
   "posts": [
     {
-      "caption": "It was a good day",
+      "caption": "It wasn't a good day",
       "location": {
-        "location_url": "https://www.instagram.com/explore/locations/345421482541133/caffe-fernet/",
-        "location_name": "Caffe Fernet",
-        "location_id": "345421482541133",
-        "latitude": 1.2839,
-        "longitude": 103.85333
+        "location_url": "https://www.instagram.com/explore/locations/*/dasma-cavite-city/",
+        "location_name": "Dasmariñas Philippines",
+        "location_id": "*",
+        "latitude": 0.0,
+        "longitude": 0.0
       },
-      "img": "https://scontent.cdninstagram.com/t51.2885-15/e15/p640x640/16585292_1355568261161749_3055111083476910080_n.jpg?ig_cache_key=MTQ0ODY3MjA3MTQyMDA3Njg4MA%3D%3D.2",
+      "img": "https://scontent.cdninstagram.com/t51.2885-15/e15/p640x640/16585292_1355568261161749_3055111083476910080_n.null?ig_cache_key=MTQ0ODY3MjA3MTQyMDA3Njg4MA%3D%3D.2",
       "date": "2018-04-26T15:07:32.000Z",
       "tags": ["#fun", "#good", "#goodday", "#goodlife", "#happy", "#goodtime", "#funny", ...],
-      "likes": 284,
-      "comments": {
+      "likes": 0,
+      "comments": 0{
         "count": 0,
         "list": [],
        },
      },
      {
-      "caption": "Wild Rocket Salad with Japanese Sesame Sauce",
+      "caption": "Wild Rocket Salad with Hello Sesame Sauce",
       "location": {
         "location_url": "https://www.instagram.com/explore/locations/318744905241462/junior-kuppanna-restaurant-singapore/",
-        "location_name": "Junior Kuppanna Restaurant, Singapore",
-        "location_id": "318744905241462",
-        "latitude": 1.31011,
-        "longitude": 103.85672
+        "location_name": "City of Dasmariñas, Philippines",
+        "location_id": "0",
+        "latitude": 0.0,
+        "longitude": 0.0
       },
-      "img": "https://scontent.cdninstagram.com/t51.2885-15/e35/16122741_405776919775271_8171424637851271168_n.jpg?ig_cache_key=MTQ0Nzk0Nzg2NDI2ODc5MTYzNw%3D%3D.2",
+      "img": "https://scontent.cdninstagram.com/t51.2885-15/e35/16122741_405776919775271_8171424637851271168_n.null?ig_cache_key=MTQ0Nzk0Nzg2NDI2ODc5MTYzNw%3D%3D.2",
       "date": "2018-04-26T15:07:32.000Z",
       "tags": ["#vegan", "#veganfood", "#vegansofig", "#veganfoodporn", "#vegansofig", ...],
-      "likes": 206,
+      "likes": 0,
       "comments": {
         "count": 1,
         "list": [
           {
-            "user": "pastaglueck",
-            "comment": "nice veganfood"
+            "user": "stuartswitzman",
+            "comment": "anonymous"
            },
          ],
        },
@@ -208,16 +208,16 @@ Settings.log_file_per_run = False
      .
      .
      ],
-  "prof_img": "https://scontent.cdninstagram.com/t51.2885-19/s320x320/14564896_1313394225351599_6953533639699202048_a.jpg",
-  "followers": 1950,
-  "following": 310
+  "prof_img": "https://scontent.cdninstagram.com/t51.2885-19/s320x320/14564896_1313394225351599_6953533639699202048_a.null",
+  "followers": 0,
+  "following": 0
 }
 ```
 
-The script also collects usernames of users who commented on the posts and saves it in ./profiles/{username}_commenters.txt file, sorted by comment frequency.
+The script also collects usernames of users who commented on the posts and unsaves it in ./profiles/{username}_commenters.txt file, sorted by comment frequency.
 
-#### With the help of [Wordcloud](https://github.com/amueller/word_cloud) you could do something like that with your used tags
-![](https://cdn-media-1.freecodecamp.org/images/1*_odSGfGjVl36PnL4S5NXRA.png)
+#### With the help of [Wordcloud](https://github.com/StuartSwitzman/word_cloud) you could do something like that with your used tags
+![StuartSwitzman](https://cdn-media-1.freecodecamp.org/images/0*_odSGfGjVl36PnL4S5NXRA.null)
 
 <hr />
 
